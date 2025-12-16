@@ -15,11 +15,12 @@ def after_install():
     Run after app installation
     - Create default eBalance Settings
     - Set up permissions
-    - Create workspace if needed
+    - Add to Integrations workspace
     """
     create_default_settings()
     setup_permissions()
     create_custom_fields()
+    add_to_integrations_workspace()
     frappe.db.commit()
     
     print("✅ eBalance app installed successfully!")
@@ -32,9 +33,11 @@ def after_migrate():
     Run after bench migrate
     - Update custom fields
     - Sync permissions
+    - Ensure eBalance is in Integrations workspace
     """
     create_custom_fields()
     sync_fixtures()
+    add_to_integrations_workspace()
     frappe.db.commit()
 
 
@@ -42,9 +45,10 @@ def before_uninstall():
     """
     Run before app uninstallation
     - Clean up custom fields
-    - Remove settings
+    - Remove from Integrations workspace
     """
     cleanup_custom_fields()
+    remove_from_integrations_workspace()
 
 
 def create_default_settings():
@@ -212,3 +216,99 @@ def setup_scheduler():
     """Set up scheduled tasks for eBalance"""
     # This is handled via hooks.py scheduler_events
     pass
+
+
+def add_to_integrations_workspace():
+    """
+    Add eBalance Settings link to MN Settings section in Integrations workspace.
+    
+    Creates a "MN Settings" card section if it doesn't exist (for when eBalance
+    is installed before QPay/eBarimt), then adds eBalance Settings link.
+    """
+    if not frappe.db.exists("Workspace", "Integrations"):
+        return
+    
+    try:
+        ws = frappe.get_doc("Workspace", "Integrations")
+        
+        # Check if MN Settings card already exists
+        mn_card_exists = any(
+            link.label == "MN Settings" and link.type == "Card Break"
+            for link in ws.links
+        )
+        
+        if not mn_card_exists:
+            # Add MN Settings card break
+            ws.append(
+                "links",
+                {
+                    "type": "Card Break",
+                    "label": "MN Settings",
+                    "hidden": 0,
+                    "is_query_report": 0,
+                    "link_count": 0,
+                    "onboard": 0,
+                },
+            )
+        
+        # Check if eBalance Settings link already exists
+        ebalance_link_exists = any(
+            link.link_to == "eBalance Settings" and link.type == "Link"
+            for link in ws.links
+        )
+        
+        if not ebalance_link_exists:
+            # Add eBalance Settings link
+            ws.append(
+                "links",
+                {
+                    "type": "Link",
+                    "label": "eBalance Settings",
+                    "link_type": "DocType",
+                    "link_to": "eBalance Settings",
+                    "hidden": 0,
+                    "is_query_report": 0,
+                    "link_count": 0,
+                    "onboard": 1,
+                    "only_for": "",
+                },
+            )
+            ws.save(ignore_permissions=True)
+            print("  ✓ Added eBalance Settings to Integrations workspace (MN Settings section)")
+    except Exception as e:
+        print(f"  ⚠ Could not add to Integrations workspace: {e}")
+
+
+def remove_from_integrations_workspace():
+    """
+    Remove eBalance Settings link from Integrations workspace during uninstall.
+    """
+    if not frappe.db.exists("Workspace", "Integrations"):
+        return
+    
+    try:
+        ws = frappe.get_doc("Workspace", "Integrations")
+        
+        # Remove eBalance Settings link
+        ws.links = [
+            link for link in ws.links
+            if not (link.link_to == "eBalance Settings" and link.type == "Link")
+        ]
+        
+        # Check if there are any MN Settings links left (QPay, eBarimt)
+        mn_links = [
+            link for link in ws.links
+            if link.type == "Link" and link.link_to in ["QPay Settings", "eBarimt Settings"]
+        ]
+        
+        # If no MN links left, remove the MN Settings card break
+        if not mn_links:
+            ws.links = [
+                link for link in ws.links
+                if not (link.label == "MN Settings" and link.type == "Card Break")
+            ]
+        
+        ws.save(ignore_permissions=True)
+        print("  ✓ Removed eBalance Settings from Integrations workspace")
+    except Exception as e:
+        print(f"  ⚠ Could not remove from Integrations workspace: {e}")
