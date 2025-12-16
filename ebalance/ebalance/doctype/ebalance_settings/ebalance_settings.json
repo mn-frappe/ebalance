@@ -212,7 +212,7 @@
   },
   {
    "default": "1",
-   "description": "eBalance-аас тайлант үеүдийг (жилийн эцэс, хагас жил) автоматаар татах.",
+   "description": "eBalance-аас тайлант үеүдийг автоматаар татах. Тайлант үе: жилийн эцэс, хагас жил гэх мэт.",
    "fieldname": "auto_sync_periods",
    "fieldtype": "Check",
    "label": "Auto Sync Report Periods"
@@ -220,6 +220,7 @@
   {
    "default": "Daily",
    "depends_on": "auto_sync_periods",
+   "description": "Тайлант үеүдийг хэр давтамжтай шалгах (цаг тутам, өдөр бүр, долоо хоног бүр).",
    "fieldname": "sync_frequency",
    "fieldtype": "Select",
    "label": "Sync Frequency",
@@ -255,8 +256,8 @@
    "label": "Auto Fetch Report Forms"
   },
   {
-   "default": "0",
-   "description": "Map ERPNext Chart of Accounts to eBalance codes",
+   "default": "1",
+   "description": "ERPNext дансыг MOF дансны кодтой автоматаар холбох. Дансны дугаар, нэрээр таарна.",
    "fieldname": "auto_map_accounts",
    "fieldtype": "Check",
    "label": "Auto Map Accounts"
