@@ -1,5 +1,6 @@
 # Copyright (c) 2025, MN Frappe and contributors
 # For license information, please see license.txt
+# pyright: reportMissingImports=false, reportAttributeAccessIssue=false, reportArgumentType=false
 
 """
 ERPNext Period Closing Voucher Integration for eBalance

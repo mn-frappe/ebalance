@@ -1,5 +1,6 @@
 # Copyright (c) 2025, MN Frappe and contributors
 # For license information, please see license.txt
+# pyright: reportMissingImports=false
 
 from ebalance.integrations.company import (
     on_update as company_on_update,

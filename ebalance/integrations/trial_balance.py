@@ -1,5 +1,6 @@
 # Copyright (c) 2025, MN Frappe and contributors
 # For license information, please see license.txt
+# pyright: reportMissingImports=false, reportAttributeAccessIssue=false, reportArgumentType=false
 
 """
 ERPNext Trial Balance Integration for eBalance
@@ -151,7 +152,8 @@ def get_balance_sheet_data(company, as_on_date):
         "accumulated_values": 1
     })
     
-    columns, data, message, chart = execute(filters)
+    result = execute(filters)
+    columns, data = result[0], result[1]
     
     return _transform_balance_sheet(data)
 
@@ -234,7 +236,8 @@ def get_profit_loss_data(company, from_date, to_date):
         "accumulated_values": 0
     })
     
-    columns, data, message, chart = execute(filters)
+    result = execute(filters)
+    columns, data = result[0], result[1]
     
     return _transform_profit_loss(data, from_date, to_date)
 
