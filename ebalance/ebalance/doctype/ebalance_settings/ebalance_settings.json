@@ -1,0 +1,403 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2024-12-16 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "connection_tab",
+  "environment_section",
+  "environment",
+  "column_break_env",
+  "enabled",
+  "auth_section",
+  "auth_url",
+  "username",
+  "password",
+  "column_break_auth",
+  "org_regno",
+  "user_regno",
+  "per_map_user_role_id",
+  "api_section",
+  "api_url",
+  "column_break_api",
+  "test_connection_button",
+  "connection_status",
+  "company_section",
+  "company",
+  "column_break_company",
+  "default_fiscal_year",
+  "automation_tab",
+  "sync_section",
+  "auto_sync_periods",
+  "sync_frequency",
+  "column_break_sync",
+  "last_sync",
+  "next_sync",
+  "auto_submit_section",
+  "auto_fetch_forms",
+  "auto_map_accounts",
+  "column_break_auto",
+  "notify_on_submission",
+  "notify_email",
+  "webhook_section",
+  "enable_webhooks",
+  "webhook_secret",
+  "advanced_tab",
+  "debug_section",
+  "debug_mode",
+  "log_api_requests",
+  "column_break_debug",
+  "log_retention_days",
+  "performance_section",
+  "request_timeout",
+  "retry_attempts",
+  "column_break_perf",
+  "connection_pool_size",
+  "token_section",
+  "access_token",
+  "token_expiry",
+  "column_break_token",
+  "refresh_token"
+ ],
+ "fields": [
+  {
+   "fieldname": "connection_tab",
+   "fieldtype": "Tab Break",
+   "label": "Connection"
+  },
+  {
+   "fieldname": "environment_section",
+   "fieldtype": "Section Break",
+   "label": "Environment"
+  },
+  {
+   "default": "Staging",
+   "fieldname": "environment",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Environment",
+   "options": "Staging\nProduction",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_env",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "auth_section",
+   "fieldtype": "Section Break",
+   "label": "Authentication (ITC OAuth2)"
+  },
+  {
+   "default": "https://auth.itc.gov.mn/auth/realms/ITC",
+   "description": "ITC OAuth2 Server URL",
+   "fieldname": "auth_url",
+   "fieldtype": "Data",
+   "label": "Auth URL",
+   "read_only": 1
+  },
+  {
+   "description": "eBalance username (e.g., ЧЕ79123134)",
+   "fieldname": "username",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Username",
+   "reqd": 1
+  },
+  {
+   "description": "eBalance password (encrypted)",
+   "fieldname": "password",
+   "fieldtype": "Password",
+   "label": "Password",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_auth",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Organization Registration Number (7 digits)",
+   "fieldname": "org_regno",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Organization RegNo",
+   "reqd": 1
+  },
+  {
+   "description": "User Registration Number (auto-filled from username if empty)",
+   "fieldname": "user_regno",
+   "fieldtype": "Data",
+   "label": "User RegNo"
+  },
+  {
+   "description": "Fetched automatically from API",
+   "fieldname": "per_map_user_role_id",
+   "fieldtype": "Data",
+   "label": "User Role ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "api_section",
+   "fieldtype": "Section Break",
+   "label": "API Connection"
+  },
+  {
+   "description": "Auto-set based on environment",
+   "fieldname": "api_url",
+   "fieldtype": "Data",
+   "label": "API URL",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_api",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "test_connection_button",
+   "fieldtype": "Button",
+   "label": "Test Connection"
+  },
+  {
+   "fieldname": "connection_status",
+   "fieldtype": "Data",
+   "label": "Connection Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "company_section",
+   "fieldtype": "Section Break",
+   "label": "Company Settings"
+  },
+  {
+   "description": "Link to ERPNext Company for GL mapping",
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company"
+  },
+  {
+   "fieldname": "column_break_company",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "default_fiscal_year",
+   "fieldtype": "Link",
+   "label": "Default Fiscal Year",
+   "options": "Fiscal Year"
+  },
+  {
+   "fieldname": "automation_tab",
+   "fieldtype": "Tab Break",
+   "label": "Automation"
+  },
+  {
+   "fieldname": "sync_section",
+   "fieldtype": "Section Break",
+   "label": "Period Sync"
+  },
+  {
+   "default": "1",
+   "fieldname": "auto_sync_periods",
+   "fieldtype": "Check",
+   "label": "Auto Sync Report Periods"
+  },
+  {
+   "default": "Daily",
+   "depends_on": "auto_sync_periods",
+   "fieldname": "sync_frequency",
+   "fieldtype": "Select",
+   "label": "Sync Frequency",
+   "options": "Hourly\nDaily\nWeekly"
+  },
+  {
+   "fieldname": "column_break_sync",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_sync",
+   "fieldtype": "Datetime",
+   "label": "Last Sync",
+   "read_only": 1
+  },
+  {
+   "fieldname": "next_sync",
+   "fieldtype": "Datetime",
+   "label": "Next Sync",
+   "read_only": 1
+  },
+  {
+   "fieldname": "auto_submit_section",
+   "fieldtype": "Section Break",
+   "label": "Auto Processing"
+  },
+  {
+   "default": "1",
+   "fieldname": "auto_fetch_forms",
+   "fieldtype": "Check",
+   "label": "Auto Fetch Report Forms"
+  },
+  {
+   "default": "0",
+   "description": "Map ERPNext Chart of Accounts to eBalance codes",
+   "fieldname": "auto_map_accounts",
+   "fieldtype": "Check",
+   "label": "Auto Map Accounts"
+  },
+  {
+   "fieldname": "column_break_auto",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "fieldname": "notify_on_submission",
+   "fieldtype": "Check",
+   "label": "Notify on Submission"
+  },
+  {
+   "depends_on": "notify_on_submission",
+   "fieldname": "notify_email",
+   "fieldtype": "Data",
+   "label": "Notification Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "webhook_section",
+   "fieldtype": "Section Break",
+   "label": "Webhooks"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_webhooks",
+   "fieldtype": "Check",
+   "label": "Enable Webhooks"
+  },
+  {
+   "depends_on": "enable_webhooks",
+   "fieldname": "webhook_secret",
+   "fieldtype": "Password",
+   "label": "Webhook Secret"
+  },
+  {
+   "fieldname": "advanced_tab",
+   "fieldtype": "Tab Break",
+   "label": "Advanced"
+  },
+  {
+   "fieldname": "debug_section",
+   "fieldtype": "Section Break",
+   "label": "Debug & Logging"
+  },
+  {
+   "default": "0",
+   "fieldname": "debug_mode",
+   "fieldtype": "Check",
+   "label": "Debug Mode"
+  },
+  {
+   "default": "0",
+   "fieldname": "log_api_requests",
+   "fieldtype": "Check",
+   "label": "Log API Requests"
+  },
+  {
+   "fieldname": "column_break_debug",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "30",
+   "fieldname": "log_retention_days",
+   "fieldtype": "Int",
+   "label": "Log Retention (Days)"
+  },
+  {
+   "fieldname": "performance_section",
+   "fieldtype": "Section Break",
+   "label": "Performance"
+  },
+  {
+   "default": "60",
+   "fieldname": "request_timeout",
+   "fieldtype": "Int",
+   "label": "Request Timeout (seconds)"
+  },
+  {
+   "default": "3",
+   "fieldname": "retry_attempts",
+   "fieldtype": "Int",
+   "label": "Retry Attempts"
+  },
+  {
+   "fieldname": "column_break_perf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "10",
+   "fieldname": "connection_pool_size",
+   "fieldtype": "Int",
+   "label": "Connection Pool Size"
+  },
+  {
+   "fieldname": "token_section",
+   "fieldtype": "Section Break",
+   "label": "Token Cache (Internal)"
+  },
+  {
+   "fieldname": "access_token",
+   "fieldtype": "Password",
+   "hidden": 1,
+   "label": "Access Token"
+  },
+  {
+   "fieldname": "token_expiry",
+   "fieldtype": "Datetime",
+   "hidden": 1,
+   "label": "Token Expiry"
+  },
+  {
+   "fieldname": "column_break_token",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "refresh_token",
+   "fieldtype": "Password",
+   "hidden": 1,
+   "label": "Refresh Token"
+  }
+ ],
+ "hide_toolbar": 0,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2024-12-16 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "eBalance",
+ "name": "eBalance Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Accounts Manager",
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

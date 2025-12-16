@@ -1,9 +1,9 @@
 [project]
 name = "ebalance"
 authors = [
-    { name = "Digital Consulting Service LLC (Mongolia)", email = "dev@frappe.mn"}
+    { name = "MN Frappe", email = "info@1cloud.mn"}
 ]
-description = "eBalance Mongolian Financial Reporting System for ERPNext"
+description = "eBalance - Mongolia Ministry of Finance Financial Reporting System Integration for ERPNext"
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]

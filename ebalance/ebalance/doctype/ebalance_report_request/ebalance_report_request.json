@@ -1,0 +1,160 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2024-12-16 12:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "report_period",
+  "report_user_org_hdr_id",
+  "column_break_1",
+  "report_type",
+  "status",
+  "dates_section",
+  "begin_date",
+  "end_date",
+  "column_break_dates",
+  "created_user_info",
+  "prev_config_name",
+  "submission_section",
+  "submitted_date",
+  "confirmed_date",
+  "column_break_sub",
+  "is_confirmed"
+ ],
+ "fields": [
+  {
+   "default": "EBAL-REQ-.YYYY.-",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "EBAL-REQ-.YYYY.-"
+  },
+  {
+   "fieldname": "report_period",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Report Period",
+   "options": "eBalance Report Period",
+   "reqd": 1
+  },
+  {
+   "description": "ID from eBalance API",
+   "fieldname": "report_user_org_hdr_id",
+   "fieldtype": "Data",
+   "label": "Report Request ID",
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "report_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Report Type"
+  },
+  {
+   "default": "Draft",
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Status",
+   "options": "Draft\nIn Progress\nSubmitted\nConfirmed\nRejected"
+  },
+  {
+   "fieldname": "dates_section",
+   "fieldtype": "Section Break",
+   "label": "Period Dates"
+  },
+  {
+   "fieldname": "begin_date",
+   "fieldtype": "Datetime",
+   "label": "Begin Date"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Datetime",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "column_break_dates",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "created_user_info",
+   "fieldtype": "Data",
+   "label": "Created By (eBalance)"
+  },
+  {
+   "fieldname": "prev_config_name",
+   "fieldtype": "Data",
+   "label": "Previous Period Config"
+  },
+  {
+   "fieldname": "submission_section",
+   "fieldtype": "Section Break",
+   "label": "Submission Info"
+  },
+  {
+   "fieldname": "submitted_date",
+   "fieldtype": "Datetime",
+   "label": "Submitted Date"
+  },
+  {
+   "fieldname": "confirmed_date",
+   "fieldtype": "Datetime",
+   "label": "Confirmed Date"
+  },
+  {
+   "fieldname": "column_break_sub",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_confirmed",
+   "fieldtype": "Check",
+   "label": "Is Confirmed"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-16 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "eBalance",
+ "name": "eBalance Report Request",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "read": 1,
+   "role": "Accounts Manager",
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Accounts User"
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}

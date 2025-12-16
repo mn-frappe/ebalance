@@ -1,249 +1,138 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2025, MN Frappe and contributors
+# License: GNU General Public License v3
+
 app_name = "ebalance"
-app_title = "eBalance Mongolian Financial Reporting System for ERPNext"
-app_publisher = "Digital Consulting Service LLC (Mongolia)"
-app_description = "eBalance Mongolian Financial Reporting System for ERPNext"
-app_email = "dev@frappe.mn"
+app_title = "eBalance"
+app_publisher = "MN Frappe"
+app_description = "Mongolia Ministry of Finance eBalance Financial Reporting System Integration for ERPNext"
+app_email = "info@1cloud.mn"
 app_license = "gpl-3.0"
+app_logo_url = "/assets/ebalance/images/ebalance_logo.png"
 
-# Apps
-# ------------------
-
-# required_apps = []
-
-# Each item in the list will be shown as an app in the apps page
-# add_to_apps_screen = [
-# 	{
-# 		"name": "ebalance",
-# 		"logo": "/assets/ebalance/logo.png",
-# 		"title": "eBalance Mongolian Financial Reporting System for ERPNext",
-# 		"route": "/ebalance",
-# 		"has_permission": "ebalance.api.permission.has_app_permission"
-# 	}
-# ]
+# Required Apps
+required_apps = ["frappe"]
 
 # Includes in <head>
-# ------------------
-
-# include js, css files in header of desk.html
-# app_include_css = "/assets/ebalance/css/ebalance.css"
-# app_include_js = "/assets/ebalance/js/ebalance.js"
-
-# include js, css files in header of web template
-# web_include_css = "/assets/ebalance/css/ebalance.css"
-# web_include_js = "/assets/ebalance/js/ebalance.js"
-
-# include custom scss in every website theme (without file extension ".scss")
-# website_theme_scss = "ebalance/public/scss/website"
-
-# include js, css files in header of web form
-# webform_include_js = {"doctype": "public/js/doctype.js"}
-# webform_include_css = {"doctype": "public/css/doctype.css"}
-
-# include js in page
-# page_js = {"page" : "public/js/file.js"}
-
-# include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
-# doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
-# doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
-# doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
-
-# Svg Icons
-# ------------------
-# include app icons in desk
-# app_include_icons = "ebalance/public/icons.svg"
-
-# Home Pages
-# ----------
-
-# application home page (will override Website Settings)
-# home_page = "login"
-
-# website user home page (by Role)
-# role_home_page = {
-# 	"Role": "home_page"
-# }
-
-# Generators
-# ----------
-
-# automatically create page for each record of this doctype
-# website_generators = ["Web Page"]
-
-# Jinja
-# ----------
-
-# add methods and filters to jinja environment
-# jinja = {
-# 	"methods": "ebalance.utils.jinja_methods",
-# 	"filters": "ebalance.utils.jinja_filters"
-# }
+app_include_css = "/assets/ebalance/css/ebalance.css"
+app_include_js = "/assets/ebalance/js/ebalance.js"
 
 # Installation
-# ------------
+after_install = "ebalance.setup.install.after_install"
+after_migrate = "ebalance.setup.install.after_migrate"
+before_uninstall = "ebalance.setup.install.before_uninstall"
 
-# before_install = "ebalance.install.before_install"
-# after_install = "ebalance.install.after_install"
+# Fixtures
+fixtures = [
+    {
+        "doctype": "Custom Field",
+        "filters": [["module", "=", "eBalance"]]
+    },
+    {
+        "doctype": "Property Setter",
+        "filters": [["module", "=", "eBalance"]]
+    },
+    {
+        "doctype": "Workspace",
+        "filters": [["module", "=", "eBalance"]]
+    }
+]
 
-# Uninstallation
-# ------------
+# DocType Events - ERPNext Integration
+doc_events = {}
 
-# before_uninstall = "ebalance.uninstall.before_uninstall"
-# after_uninstall = "ebalance.uninstall.after_uninstall"
+def _setup_doc_events():
+    """Dynamically setup doc_events based on installed apps"""
+    global doc_events
+    import frappe
+    
+    # Base events (always available)
+    base_events = {}
+    
+    # ERPNext specific events
+    erpnext_events = {
+        "Company": {
+            "on_update": "ebalance.integrations.company.on_update",
+        },
+        "Period Closing Voucher": {
+            "on_submit": "ebalance.integrations.period_closing.on_submit",
+            "on_cancel": "ebalance.integrations.period_closing.on_cancel",
+        },
+        "GL Entry": {
+            "on_update": "ebalance.integrations.gl_entry.on_update",
+            "on_cancel": "ebalance.integrations.gl_entry.on_cancel",
+        },
+    }
+    
+    # Check if ERPNext is installed
+    try:
+        if "erpnext" in frappe.get_installed_apps():
+            doc_events.update(erpnext_events)
+    except Exception:
+        pass
+    
+    doc_events.update(base_events)
 
-# Integration Setup
-# ------------------
-# To set up dependencies/integrations with other apps
-# Name of the app being installed is passed as an argument
-
-# before_app_install = "ebalance.utils.before_app_install"
-# after_app_install = "ebalance.utils.after_app_install"
-
-# Integration Cleanup
-# -------------------
-# To clean up dependencies/integrations with other apps
-# Name of the app being uninstalled is passed as an argument
-
-# before_app_uninstall = "ebalance.utils.before_app_uninstall"
-# after_app_uninstall = "ebalance.utils.after_app_uninstall"
-
-# Desk Notifications
-# ------------------
-# See frappe.core.notifications.get_notification_config
-
-# notification_config = "ebalance.notifications.get_notification_config"
-
-# Permissions
-# -----------
-# Permissions evaluated in scripted ways
-
-# permission_query_conditions = {
-# 	"Event": "frappe.desk.doctype.event.event.get_permission_query_conditions",
-# }
-#
-# has_permission = {
-# 	"Event": "frappe.desk.doctype.event.event.has_permission",
-# }
-
-# DocType Class
-# ---------------
-# Override standard doctype classes
-
-# override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
-
-# Document Events
-# ---------------
-# Hook on document methods and events
-
-# doc_events = {
-# 	"*": {
-# 		"on_update": "method",
-# 		"on_cancel": "method",
-# 		"on_trash": "method"
-# 	}
-# }
+# Initialize doc_events at module load
+try:
+    _setup_doc_events()
+except Exception:
+    pass
 
 # Scheduled Tasks
-# ---------------
+scheduler_events = {
+    "daily": [
+        "ebalance.tasks.daily.execute",
+    ],
+    "weekly": [
+        "ebalance.tasks.weekly.execute",
+    ],
+}
 
-# scheduler_events = {
-# 	"all": [
-# 		"ebalance.tasks.all"
-# 	],
-# 	"daily": [
-# 		"ebalance.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"ebalance.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"ebalance.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"ebalance.tasks.monthly"
-# 	],
-# }
+# Permissions
+permission_query_conditions = {}
+has_permission = {}
 
-# Testing
-# -------
+# Desk Notifications
+notification_config = "ebalance.startup.boot.get_notification_config"
 
-# before_tests = "ebalance.install.before_tests"
+# Boot Session Info
+boot_session = "ebalance.startup.boot.boot_session"
 
-# Overriding Methods
-# ------------------------------
-#
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "ebalance.event.get_events"
-# }
-#
-# each overriding function accepts a `data` argument;
-# generated from the base implementation of the doctype dashboard,
-# along with any modifications made in other Frappe apps
-# override_doctype_dashboards = {
-# 	"Task": "ebalance.task.get_dashboard_data"
-# }
+# Website Route Rules
+website_route_rules = []
 
-# exempt linked doctypes from being automatically cancelled
-#
-# auto_cancel_exempted_doctypes = ["Auto Repeat"]
+# Jinja Methods
+jinja = {
+    "methods": [
+        "ebalance.utils.jinja.format_mnt",
+        "ebalance.utils.jinja.format_ebalance_date",
+        "ebalance.utils.jinja.get_period_status",
+        "ebalance.utils.jinja.get_submission_status_badge",
+        "ebalance.utils.jinja.get_ebalance_settings",
+    ],
+    "filters": [
+        "ebalance.utils.jinja.ebalance_filters",
+    ],
+}
 
-# Ignore links to specified DocTypes when deleting documents
-# -----------------------------------------------------------
+# Override standard methods
+override_whitelisted_methods = {}
 
-# ignore_links_on_delete = ["Communication", "ToDo"]
+# Override doctype class
+override_doctype_class = {}
 
-# Request Events
-# ----------------
-# before_request = ["ebalance.utils.before_request"]
-# after_request = ["ebalance.utils.after_request"]
+# Standard Portal Menu Items
+standard_portal_menu_items = []
 
-# Job Events
-# ----------
-# before_job = ["ebalance.utils.before_job"]
-# after_job = ["ebalance.utils.after_job"]
+# Workflow definitions
+workflows = []
 
 # User Data Protection
-# --------------------
+user_data_fields = []
 
-# user_data_fields = [
-# 	{
-# 		"doctype": "{doctype_1}",
-# 		"filter_by": "{filter_by}",
-# 		"redact_fields": ["{field_1}", "{field_2}"],
-# 		"partial": 1,
-# 	},
-# 	{
-# 		"doctype": "{doctype_2}",
-# 		"filter_by": "{filter_by}",
-# 		"partial": 1,
-# 	},
-# 	{
-# 		"doctype": "{doctype_3}",
-# 		"strict": False,
-# 	},
-# 	{
-# 		"doctype": "{doctype_4}"
-# 	}
-# ]
+# Authentication and Authorization
+auth_hooks = []
 
-# Authentication and authorization
-# --------------------------------
-
-# auth_hooks = [
-# 	"ebalance.auth.validate"
-# ]
-
-# Automatically update python controller files with type annotations for this app.
-# export_python_type_annotations = True
-
-# default_log_clearing_doctypes = {
-# 	"Logging DocType Name": 30  # days to retain logs
-# }
-
-# Translation
-# ------------
-# List of apps whose translatable strings should be excluded from this app's translations.
-# ignore_translatable_strings_from = []
-
+# Testing
+# before_tests = "ebalance.tests.setup.before_tests"

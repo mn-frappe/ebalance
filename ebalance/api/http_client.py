@@ -1,0 +1,194 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2024, Digital Consulting Service LLC (Mongolia)
+# License: GNU General Public License v3
+# pyright: reportMissingImports=false
+
+"""
+eBalance API - HTTP Client Module
+
+Base HTTP client for eBalance API requests with retry logic,
+error handling, and request logging.
+"""
+
+import frappe
+import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
+
+
+class EBalanceHTTPError(Exception):
+	"""HTTP error for eBalance API"""
+	def __init__(self, message, status_code=None, response_data=None):
+		super().__init__(message)
+		self.status_code = status_code
+		self.response_data = response_data
+
+
+class EBalanceHTTPClient:
+	"""
+	HTTP client for eBalance API with retry logic and logging.
+	
+	API servers:
+	- Staging: https://st-inspector-ebalance.mof.gov.mn
+	- Production: https://inspector-ebalance.mof.gov.mn
+	"""
+	
+	API_URLS = {
+		"Staging": "https://st-inspector-ebalance.mof.gov.mn",
+		"Production": "https://inspector-ebalance.mof.gov.mn"
+	}
+	
+	def __init__(self, settings=None):
+		"""Initialize HTTP client"""
+		self.settings = settings or self._get_settings()
+		self.session = self._create_session()
+	
+	def _get_settings(self):
+		"""Get eBalance Settings"""
+		try:
+			return frappe.get_single("eBalance Settings")
+		except Exception:
+			return None
+	
+	def _create_session(self):
+		"""Create requests session with retry logic"""
+		session = requests.Session()
+		
+		# Configure retries
+		retries = Retry(
+			total=3,
+			backoff_factor=0.5,
+			status_forcelist=[500, 502, 503, 504],
+			allowed_methods=["GET", "POST"]
+		)
+		
+		adapter = HTTPAdapter(max_retries=retries)
+		session.mount("https://", adapter)
+		session.mount("http://", adapter)
+		
+		return session
+	
+	@property
+	def base_url(self):
+		"""Get API base URL based on environment"""
+		if self.settings:
+			env = self.settings.environment or "Staging"
+			return self.API_URLS.get(env, self.API_URLS["Staging"])
+		return self.API_URLS["Staging"]
+	
+	@property
+	def timeout(self):
+		"""Get request timeout from settings"""
+		if self.settings and self.settings.request_timeout:
+			return int(self.settings.request_timeout)
+		return 60
+	
+	def request(self, method, endpoint, auth_header=None, **kwargs):
+		"""
+		Make HTTP request to eBalance API.
+		
+		Args:
+			method: HTTP method (GET, POST, etc.)
+			endpoint: API endpoint (relative to base URL)
+			auth_header: Authorization header dict
+			**kwargs: Additional requests arguments
+			
+		Returns:
+			dict: Response JSON data
+			
+		Raises:
+			EBalanceHTTPError: If request fails
+		"""
+		url = f"{self.base_url}{endpoint}"
+		
+		# Set default headers
+		headers = kwargs.pop("headers", {})
+		headers.setdefault("Content-Type", "application/json")
+		headers.setdefault("Accept", "application/json")
+		
+		# Add auth header if provided
+		if auth_header:
+			headers.update(auth_header)
+		
+		# Add additional headers from settings
+		if self.settings:
+			if self.settings.user_regno:
+				headers["userRegNo"] = self.settings.user_regno
+			if self.settings.org_regno:
+				headers["orgRegNo"] = self.settings.org_regno
+		
+		# Set timeout
+		kwargs.setdefault("timeout", self.timeout)
+		
+		# Log request (without sensitive data)
+		self._log_request(method, endpoint, kwargs.get("params"), kwargs.get("json"))
+		
+		try:
+			response = self.session.request(
+				method,
+				url,
+				headers=headers,
+				**kwargs
+			)
+			
+			# Log response
+			self._log_response(endpoint, response.status_code)
+			
+			# Parse response
+			return self._handle_response(response, endpoint)
+			
+		except requests.exceptions.Timeout:
+			raise EBalanceHTTPError(f"Request timeout: {endpoint}", status_code=408)
+		except requests.exceptions.ConnectionError as e:
+			raise EBalanceHTTPError(f"Connection error: {str(e)}", status_code=503)
+		except requests.exceptions.RequestException as e:
+			raise EBalanceHTTPError(f"Request failed: {str(e)}")
+	
+	def _handle_response(self, response, endpoint):
+		"""Handle API response"""
+		try:
+			data = response.json() if response.content else {}
+		except ValueError:
+			data = {"raw": response.text}
+		
+		if response.status_code >= 400:
+			error_msg = data.get("message") or data.get("error") or f"HTTP {response.status_code}"
+			raise EBalanceHTTPError(
+				f"API error on {endpoint}: {error_msg}",
+				status_code=response.status_code,
+				response_data=data
+			)
+		
+		return data
+	
+	def _log_request(self, method, endpoint, params=None, json_data=None):
+		"""Log API request (debug mode only, no sensitive data)"""
+		if self.settings and self.settings.debug_mode:
+			frappe.logger("ebalance").debug(
+				f"eBalance API Request: {method} {endpoint}"
+			)
+	
+	def _log_response(self, endpoint, status_code):
+		"""Log API response"""
+		if self.settings and self.settings.debug_mode:
+			frappe.logger("ebalance").debug(
+				f"eBalance API Response: {endpoint} -> {status_code}"
+			)
+	
+	def get(self, endpoint, auth_header=None, **kwargs):
+		"""Make GET request"""
+		return self.request("GET", endpoint, auth_header, **kwargs)
+	
+	def post(self, endpoint, auth_header=None, **kwargs):
+		"""Make POST request"""
+		return self.request("POST", endpoint, auth_header, **kwargs)
+	
+	def close(self):
+		"""Close session"""
+		if self.session:
+			self.session.close()
+
+
+def get_http_client():
+	"""Get EBalanceHTTPClient instance"""
+	return EBalanceHTTPClient()

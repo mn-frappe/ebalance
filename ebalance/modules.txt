@@ -1,1 +1,1 @@
-eBalance Mongolian Financial Reporting System for ERPNext
+eBalance

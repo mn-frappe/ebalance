@@ -1,0 +1,351 @@
+/*
+ * eBalance App Styles
+ * Copyright (c) 2025, MN Frappe
+ */
+
+/* ==========================================================================
+   eBalance Workspace Styles
+   ========================================================================== */
+
+.ebalance-workspace {
+    padding: 15px;
+}
+
+.ebalance-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ebalance-header h4 {
+    margin: 0;
+    color: var(--heading-color);
+}
+
+/* ==========================================================================
+   Status Indicators
+   ========================================================================== */
+
+.ebalance-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.ebalance-status.draft {
+    background-color: var(--bg-grey);
+    color: var(--text-muted);
+}
+
+.ebalance-status.in-progress {
+    background-color: var(--bg-yellow);
+    color: var(--yellow-600);
+}
+
+.ebalance-status.pending {
+    background-color: var(--bg-orange);
+    color: var(--orange-600);
+}
+
+.ebalance-status.submitted {
+    background-color: var(--bg-green);
+    color: var(--green-600);
+}
+
+.ebalance-status.confirmed {
+    background-color: var(--bg-blue);
+    color: var(--blue-600);
+}
+
+.ebalance-status.error {
+    background-color: var(--bg-red);
+    color: var(--red-600);
+}
+
+/* ==========================================================================
+   Settings Page
+   ========================================================================== */
+
+.ebalance-settings-section {
+    margin-bottom: 25px;
+}
+
+.ebalance-settings-section .section-head {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--heading-color);
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Connection Status Card */
+.ebalance-connection-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 15px;
+}
+
+.ebalance-connection-card.connected {
+    border-left: 4px solid var(--green-500);
+}
+
+.ebalance-connection-card.disconnected {
+    border-left: 4px solid var(--red-500);
+}
+
+.ebalance-connection-card.testing {
+    border-left: 4px solid var(--yellow-500);
+}
+
+.ebalance-connection-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.ebalance-connection-status .indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.ebalance-connection-status .indicator.green {
+    background-color: var(--green-500);
+}
+
+.ebalance-connection-status .indicator.red {
+    background-color: var(--red-500);
+}
+
+.ebalance-connection-status .indicator.yellow {
+    background-color: var(--yellow-500);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* ==========================================================================
+   Report Period Cards
+   ========================================================================== */
+
+.ebalance-period-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    transition: box-shadow 0.2s ease;
+}
+
+.ebalance-period-card:hover {
+    box-shadow: var(--shadow-sm);
+}
+
+.ebalance-period-card .period-name {
+    font-weight: 600;
+    color: var(--heading-color);
+    margin-bottom: 5px;
+}
+
+.ebalance-period-card .period-dates {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.ebalance-period-card .period-deadline {
+    font-size: 12px;
+    color: var(--orange-600);
+    margin-top: 5px;
+}
+
+.ebalance-period-card .period-deadline.urgent {
+    color: var(--red-600);
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Report Request Form
+   ========================================================================== */
+
+.ebalance-report-form {
+    max-width: 800px;
+}
+
+.ebalance-report-form .form-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: var(--subtle-fg);
+    border-radius: 6px;
+}
+
+.ebalance-report-form .form-section-title {
+    font-weight: 600;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Data Preview Table */
+.ebalance-preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.ebalance-preview-table th,
+.ebalance-preview-table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ebalance-preview-table th {
+    background: var(--subtle-fg);
+    font-weight: 600;
+    color: var(--heading-color);
+}
+
+.ebalance-preview-table .number {
+    text-align: right;
+    font-family: var(--font-mono);
+}
+
+.ebalance-preview-table .total-row {
+    font-weight: 600;
+    background: var(--subtle-fg);
+}
+
+/* ==========================================================================
+   Submission Log
+   ========================================================================== */
+
+.ebalance-log-entry {
+    padding: 12px;
+    border-left: 3px solid var(--border-color);
+    margin-bottom: 10px;
+    background: var(--subtle-fg);
+}
+
+.ebalance-log-entry.success {
+    border-left-color: var(--green-500);
+}
+
+.ebalance-log-entry.error {
+    border-left-color: var(--red-500);
+}
+
+.ebalance-log-entry.warning {
+    border-left-color: var(--yellow-500);
+}
+
+.ebalance-log-entry .log-time {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+}
+
+.ebalance-log-entry .log-message {
+    font-size: 13px;
+}
+
+/* ==========================================================================
+   Dashboard Widget
+   ========================================================================== */
+
+.ebalance-dashboard-widget {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.ebalance-dashboard-widget .widget-title {
+    font-weight: 600;
+    color: var(--heading-color);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ebalance-dashboard-widget .widget-title .icon {
+    color: var(--primary-color);
+}
+
+.ebalance-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 15px;
+}
+
+.ebalance-stat-item {
+    text-align: center;
+    padding: 10px;
+}
+
+.ebalance-stat-item .stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--heading-color);
+}
+
+.ebalance-stat-item .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 5px;
+}
+
+/* ==========================================================================
+   Responsive Adjustments
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .ebalance-stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .ebalance-preview-table {
+        font-size: 12px;
+    }
+    
+    .ebalance-preview-table th,
+    .ebalance-preview-table td {
+        padding: 6px 8px;
+    }
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+    .ebalance-workspace {
+        padding: 0;
+    }
+    
+    .ebalance-connection-card,
+    .ebalance-period-card {
+        border: 1px solid #000;
+        box-shadow: none;
+    }
+    
+    .ebalance-preview-table {
+        border: 1px solid #000;
+    }
+    
+    .ebalance-preview-table th,
+    .ebalance-preview-table td {
+        border: 1px solid #000;
+    }
+}
