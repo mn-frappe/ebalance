@@ -96,8 +96,13 @@ def sync_all_periods():
         
         client = EBalanceClient()
         
+        # Get current writing config code from settings
+        writing_config_code = settings.writing_config_code if hasattr(settings, 'writing_config_code') else None
+        if not writing_config_code:
+            return
+        
         # Get all connected periods
-        org_list = client.get_report_org_list()
+        org_list = client.get_report_org_list(writing_config_code)
         
         if not org_list:
             return

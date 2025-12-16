@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2024, Digital Consulting Service LLC (Mongolia)
 # License: GNU General Public License v3
-# pyright: reportMissingImports=false, reportAttributeAccessIssue=false
+# pyright: reportMissingImports=false, reportAttributeAccessIssue=false, reportIndexIssue=false
 
 """
 MOF Account Fixtures
@@ -294,10 +294,11 @@ def setup_mof_accounts():
 def get_mof_account_stats():
 	"""Get statistics about MOF account mappings"""
 	total = frappe.db.count("MOF Account Mapping")
-	mapped = frappe.db.sql("""
-		SELECT COUNT(DISTINCT parent) 
+	result = frappe.db.sql("""
+		SELECT COUNT(DISTINCT parent) as cnt
 		FROM `tabMOF Account Mapping Item`
-	""")[0][0] or 0
+	""", as_dict=True)
+	mapped = result[0].get("cnt", 0) if result else 0
 	
 	by_root_type = frappe.db.sql("""
 		SELECT root_type, COUNT(*) as count

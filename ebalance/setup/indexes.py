@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2024, Digital Consulting Service LLC (Mongolia)
 # License: GNU General Public License v3
+# pyright: reportMissingImports=false, reportAttributeAccessIssue=false, reportIndexIssue=false, reportOperatorIssue=false
 
 """
 eBalance Database Indexes
@@ -109,7 +110,7 @@ def index_exists(table: str, index_name: str) -> bool:
 			AND table_name = %s
 			AND index_name = %s
 		""", (table, index_name), as_dict=True)
-		return result[0].cnt > 0
+		return bool(result and result[0].get("cnt", 0) > 0)
 	except Exception:
 		return False
 

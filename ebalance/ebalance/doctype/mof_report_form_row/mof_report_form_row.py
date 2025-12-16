@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2024, Digital Consulting Service LLC (Mongolia)
 # License: GNU General Public License v3
-# pyright: reportMissingImports=false, reportAttributeAccessIssue=false
+# pyright: reportMissingImports=false, reportAttributeAccessIssue=false, reportIncompatibleMethodOverride=false
 
 """
 MOF Report Form Row - Maps MOF form rows (СБТ.1, СБТ.1.1) to account aggregations
@@ -77,7 +77,7 @@ class MOFReportFormRow(Document):
 						title=frappe._("Formula Error")
 					)
 	
-	def get_value(self, company, from_date, to_date):
+	def calculate_row_value(self, company, from_date, to_date):
 		"""
 		Calculate row value from mapped accounts or formula.
 		
@@ -131,7 +131,7 @@ class MOFReportFormRow(Document):
 			row_name = f"{self.form_code}-{ref}"
 			if frappe.db.exists("MOF Report Form Row", row_name):
 				row = frappe.get_doc("MOF Report Form Row", row_name)
-				values[ref] = row.get_value(company, from_date, to_date)
+				values[ref] = row.calculate_row_value(company, from_date, to_date)
 			else:
 				values[ref] = 0.0
 		
