@@ -74,7 +74,7 @@
   },
   {
    "default": "Staging",
-   "description": "Staging = Туршилтын орчин (st-inspector-ebalance.mof.gov.mn), Production = Бодит орчин (inspector-ebalance.mof.gov.mn)",
+   "description": "Staging = Test environment (st-inspector-ebalance.mof.gov.mn), Production = Live environment (inspector-ebalance.mof.gov.mn)",
    "fieldname": "environment",
    "fieldtype": "Select",
    "in_list_view": 1,
@@ -88,7 +88,7 @@
   },
   {
    "default": "1",
-   "description": "eBalance интеграцийг идэвхжүүлэх. Унтраавал API дуудлага хийхгүй.",
+   "description": "Enable eBalance integration. If disabled, no API calls will be made.",
    "fieldname": "enabled",
    "fieldtype": "Check",
    "label": "Enabled"
@@ -108,7 +108,7 @@
    "read_only": 1
   },
   {
-   "description": "ITC SSO хэрэглэгчийн нэр (жишээ нь: АА10010110). Сангийн яамнаас олгосон eBalance системд нэвтрэх нэр.",
+   "description": "ITC SSO username (e.g., AA10010110). Login name provided by Ministry of Finance for eBalance system.",
    "fieldname": "username",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -116,7 +116,7 @@
    "reqd": 1
   },
   {
-   "description": "ITC SSO нууц үг. Frappe системд шифрлэгдсэн хэлбэрээр хадгалагдана.",
+   "description": "ITC SSO password. Stored encrypted in Frappe system.",
    "fieldname": "password",
    "fieldtype": "Password",
    "label": "Password",
@@ -127,7 +127,7 @@
    "fieldtype": "Column Break"
   },
   {
-   "description": "Байгууллагын регистрийн дугаар (7 оронтой тоо, жишээ нь: 1234567). ТҮЦ-ийн бүртгэлийн дугаар.",
+   "description": "Organization registration number (7-digit number, e.g., 1234567). TIN registration number.",
    "fieldname": "org_regno",
    "fieldtype": "Data",
    "in_list_view": 1,
@@ -135,13 +135,13 @@
    "reqd": 1
   },
   {
-   "description": "Хэрэглэгчийн регистрийн дугаар. Хоосон үед Username-аас автоматаар авна.",
+   "description": "User registration number. Auto-filled from Username if empty.",
    "fieldname": "user_regno",
    "fieldtype": "Data",
    "label": "User RegNo"
   },
   {
-   "description": "eBalance API-аас автоматаар авсан хэрэглэгчийн эрхийн ID. Test Connection дарахад шинэчлэгдэнэ.",
+   "description": "User role ID automatically retrieved from eBalance API. Updated when Test Connection is clicked.",
    "fieldname": "per_map_user_role_id",
    "fieldtype": "Data",
    "label": "User Role ID",
@@ -182,7 +182,7 @@
    "label": "Company Settings"
   },
   {
-   "description": "ERPNext-ийн компани. Санхүүгийн тайланг энэ компанийн GL Entry-ээс үүсгэнэ.",
+   "description": "ERPNext company. Financial reports will be generated from this company's GL Entries.",
    "fieldname": "company",
    "fieldtype": "Link",
    "label": "Company",
@@ -193,7 +193,7 @@
    "fieldtype": "Column Break"
   },
   {
-   "description": "Тайлангийн үндсэн санхүүгийн жил. Тайлан үүсгэхэд автоматаар сонгогдоно.",
+   "description": "Default fiscal year for reports. Automatically selected when generating reports.",
    "fieldname": "default_fiscal_year",
    "fieldtype": "Link",
    "label": "Default Fiscal Year",
@@ -212,7 +212,7 @@
   },
   {
    "default": "1",
-   "description": "eBalance-аас тайлант үеүдийг автоматаар татах. Тайлант үе: жилийн эцэс, хагас жил гэх мэт.",
+   "description": "Automatically sync report periods from eBalance. Report periods include year-end, half-year, etc.",
    "fieldname": "auto_sync_periods",
    "fieldtype": "Check",
    "label": "Auto Sync Report Periods"
@@ -220,7 +220,7 @@
   {
    "default": "Daily",
    "depends_on": "auto_sync_periods",
-   "description": "Тайлант үеүдийг хэр давтамжтай шалгах (цаг тутам, өдөр бүр, долоо хоног бүр).",
+   "description": "How often to check for new report periods (hourly, daily, or weekly).",
    "fieldname": "sync_frequency",
    "fieldtype": "Select",
    "label": "Sync Frequency",
@@ -250,14 +250,14 @@
   },
   {
    "default": "1",
-   "description": "Тайлангийн маягт (СБТ, ОҮТ, МГТ)-ийн бүтцийг eBalance-аас автоматаар татах.",
+   "description": "Automatically fetch report form structures (Balance Sheet, Income Statement, Cash Flow) from eBalance.",
    "fieldname": "auto_fetch_forms",
    "fieldtype": "Check",
    "label": "Auto Fetch Report Forms"
   },
   {
    "default": "1",
-   "description": "ERPNext дансыг MOF дансны кодтой автоматаар холбох. Дансны дугаар, нэрээр таарна.",
+   "description": "Automatically map ERPNext accounts to MOF account codes based on account number and name matching.",
    "fieldname": "auto_map_accounts",
    "fieldtype": "Check",
    "label": "Auto Map Accounts"
@@ -268,14 +268,14 @@
   },
   {
    "default": "1",
-   "description": "Тайлан илгээсний дараа имэйлээр мэдэгдэл илгээх.",
+   "description": "Send email notification after report submission.",
    "fieldname": "notify_on_submission",
    "fieldtype": "Check",
    "label": "Notify on Submission"
   },
   {
    "depends_on": "notify_on_submission",
-   "description": "Мэдэгдэл хүлээн авах имэйл хаяг.",
+   "description": "Email address to receive notifications.",
    "fieldname": "notify_email",
    "fieldtype": "Data",
    "label": "Notification Email",
@@ -312,14 +312,14 @@
   },
   {
    "default": "0",
-   "description": "Debug горимыг идэвхжүүлэх. API хүсэлт, хариултыг дэлгэрэнгүй бичнэ.",
+   "description": "Enable debug mode. Logs detailed API requests and responses.",
    "fieldname": "debug_mode",
    "fieldtype": "Check",
    "label": "Debug Mode"
   },
   {
    "default": "0",
-   "description": "API хүсэлтүүдийг eBalance Submission Log-д бичих.",
+   "description": "Log API requests to eBalance Submission Log.",
    "fieldname": "log_api_requests",
    "fieldtype": "Check",
    "label": "Log API Requests"
@@ -330,7 +330,7 @@
   },
   {
    "default": "30",
-   "description": "Бүртгэлийг хэдэн хоног хадгалах. Хуучин бүртгэлүүд автоматаар устана.",
+   "description": "Number of days to retain logs. Old logs are automatically deleted.",
    "fieldname": "log_retention_days",
    "fieldtype": "Int",
    "label": "Log Retention (Days)"
@@ -343,14 +343,14 @@
   },
   {
    "default": "60",
-   "description": "API хүсэлтийн хугацааны хязгаар (секунд). Удаан хариу өгвөл алдаа гарна.",
+   "description": "API request timeout in seconds. Slow responses will result in an error.",
    "fieldname": "request_timeout",
    "fieldtype": "Int",
    "label": "Request Timeout (seconds)"
   },
   {
    "default": "3",
-   "description": "API алдаа гарвал дахин оролдох тоо. 500, 502, 503 алдаанд хамаарна.",
+   "description": "Number of retry attempts on API error. Applies to 500, 502, 503 errors.",
    "fieldname": "retry_attempts",
    "fieldtype": "Int",
    "label": "Retry Attempts"
@@ -361,7 +361,7 @@
   },
   {
    "default": "10",
-   "description": "HTTP холболтын сан. Олон хүсэлт зэрэг илгээхэд хэрэглэнэ.",
+   "description": "HTTP connection pool size. Used for concurrent API requests.",
    "fieldname": "connection_pool_size",
    "fieldtype": "Int",
    "label": "Connection Pool Size"
