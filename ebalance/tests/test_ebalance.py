@@ -7,11 +7,11 @@ eBalance Basic Tests
 Verifies core functionality
 """
 
+import unittest
 import frappe
-from frappe.tests import IntegrationTestCase
 
 
-class TestEBalanceBasic(IntegrationTestCase):
+class TestEBalanceBasic(unittest.TestCase):
     """Basic tests for eBalance app"""
     
     def test_app_installed(self):
