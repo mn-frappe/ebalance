@@ -24,12 +24,23 @@ class EBalanceAuth:
 	"""
 	ITC OAuth2 Authentication handler for eBalance.
 	
-	Auth servers:
+	Auth Gateway (api.frappe.mn):
+	- Production: /auth/itc/
+	- Staging: /auth/itc-staging/
+	
+	Direct Auth servers (fallback):
 	- Staging: https://st.auth.itc.gov.mn/auth/realms/Staging
 	- Production: https://auth.itc.gov.mn/auth/realms/ITC
 	"""
 	
-	# Auth server URLs
+	# Primary: api.frappe.mn gateway
+	GATEWAY_URL = "https://api.frappe.mn"
+	GATEWAY_PATHS = {
+		"Staging": "/auth/itc-staging",
+		"Production": "/auth/itc"
+	}
+	
+	# Fallback: Direct auth servers
 	AUTH_URLS = {
 		"Staging": "https://st.auth.itc.gov.mn/auth/realms/Staging",
 		"Production": "https://auth.itc.gov.mn/auth/realms/ITC"
@@ -62,7 +73,14 @@ class EBalanceAuth:
 	
 	@property
 	def auth_url(self):
-		"""Get auth URL based on environment"""
+		"""Get auth URL - uses api.frappe.mn gateway"""
+		env = self.settings.environment or "Staging"
+		gateway_path = self.GATEWAY_PATHS.get(env, self.GATEWAY_PATHS["Staging"])
+		return f"{self.GATEWAY_URL}{gateway_path}"
+	
+	@property
+	def auth_url_direct(self):
+		"""Get direct auth URL for fallback"""
 		env = self.settings.environment or "Staging"
 		return self.AUTH_URLS.get(env, self.AUTH_URLS["Staging"])
 	

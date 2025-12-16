@@ -17,4 +17,4 @@ Integrates with Ministry of Finance (Сангийн яам) eBalance system for:
 - Full ERPNext Trial Balance integration
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"

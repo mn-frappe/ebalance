@@ -28,12 +28,24 @@ class EBalanceHTTPClient:
 	"""
 	HTTP client for eBalance API with retry logic and logging.
 	
-	API servers:
+	API Gateway (api.frappe.mn):
+	- Production: /ebalance/
+	- Staging: /ebalance-staging/
+	
+	Direct API servers (fallback):
 	- Staging: https://st-inspector-ebalance.mof.gov.mn
 	- Production: https://inspector-ebalance.mof.gov.mn
 	"""
 	
-	API_URLS = {
+	# Primary: api.frappe.mn gateway
+	GATEWAY_URL = "https://api.frappe.mn"
+	GATEWAY_PATHS = {
+		"Staging": "/ebalance-staging",
+		"Production": "/ebalance"
+	}
+	
+	# Fallback: Direct MOF servers
+	DIRECT_URLS = {
 		"Staging": "https://st-inspector-ebalance.mof.gov.mn",
 		"Production": "https://inspector-ebalance.mof.gov.mn"
 	}
@@ -70,11 +82,22 @@ class EBalanceHTTPClient:
 	
 	@property
 	def base_url(self):
-		"""Get API base URL based on environment"""
+		"""Get API base URL - uses api.frappe.mn gateway"""
+		env = "Staging"
 		if self.settings:
 			env = self.settings.environment or "Staging"
-			return self.API_URLS.get(env, self.API_URLS["Staging"])
-		return self.API_URLS["Staging"]
+		
+		# Use gateway
+		gateway_path = self.GATEWAY_PATHS.get(env, self.GATEWAY_PATHS["Staging"])
+		return f"{self.GATEWAY_URL}{gateway_path}"
+	
+	@property
+	def direct_url(self):
+		"""Get direct MOF URL for fallback"""
+		env = "Staging"
+		if self.settings:
+			env = self.settings.environment or "Staging"
+		return self.DIRECT_URLS.get(env, self.DIRECT_URLS["Staging"])
 	
 	@property
 	def timeout(self):
