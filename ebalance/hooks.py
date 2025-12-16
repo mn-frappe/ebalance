@@ -39,45 +39,21 @@ fixtures = [
 ]
 
 # DocType Events - ERPNext Integration
-doc_events = {}
-
-def _setup_doc_events():
-    """Dynamically setup doc_events based on installed apps"""
-    global doc_events
-    import frappe
-    
-    # Base events (always available)
-    base_events = {}
-    
-    # ERPNext specific events
-    erpnext_events = {
-        "Company": {
-            "on_update": "ebalance.integrations.company.on_update",
-        },
-        "Period Closing Voucher": {
-            "on_submit": "ebalance.integrations.period_closing.on_submit",
-            "on_cancel": "ebalance.integrations.period_closing.on_cancel",
-        },
-        "GL Entry": {
-            "on_update": "ebalance.integrations.gl_entry.on_update",
-            "on_cancel": "ebalance.integrations.gl_entry.on_cancel",
-        },
-    }
-    
-    # Check if ERPNext is installed
-    try:
-        if "erpnext" in frappe.get_installed_apps():
-            doc_events.update(erpnext_events)
-    except Exception:
-        pass
-    
-    doc_events.update(base_events)
-
-# Initialize doc_events at module load
-try:
-    _setup_doc_events()
-except Exception:
-    pass
+# These are registered only when ERPNext is installed
+doc_events = {
+    # ERPNext specific events - checked at runtime
+    "Company": {
+        "on_update": "ebalance.integrations.company.on_update",
+    },
+    "Period Closing Voucher": {
+        "on_submit": "ebalance.integrations.period_closing.on_submit",
+        "on_cancel": "ebalance.integrations.period_closing.on_cancel",
+    },
+    "GL Entry": {
+        "on_update": "ebalance.integrations.gl_entry.on_update",
+        "on_cancel": "ebalance.integrations.gl_entry.on_cancel",
+    },
+}
 
 # Scheduled Tasks
 scheduler_events = {
