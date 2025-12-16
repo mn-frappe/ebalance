@@ -67,6 +67,7 @@
    "label": "Connection"
   },
   {
+   "collapsible": 1,
    "fieldname": "environment_section",
    "fieldtype": "Section Break",
    "label": "Environment"
@@ -93,6 +94,7 @@
    "label": "Enabled"
   },
   {
+   "collapsible": 1,
    "fieldname": "auth_section",
    "fieldtype": "Section Break",
    "label": "Authentication (ITC OAuth2)"
@@ -146,6 +148,7 @@
    "read_only": 1
   },
   {
+   "collapsible": 1,
    "fieldname": "api_section",
    "fieldtype": "Section Break",
    "label": "API Connection"
@@ -173,6 +176,7 @@
    "read_only": 1
   },
   {
+   "collapsible": 1,
    "fieldname": "company_section",
    "fieldtype": "Section Break",
    "label": "Company Settings"
@@ -201,6 +205,7 @@
    "label": "Automation"
   },
   {
+   "collapsible": 1,
    "fieldname": "sync_section",
    "fieldtype": "Section Break",
    "label": "Period Sync"
@@ -237,6 +242,7 @@
    "read_only": 1
   },
   {
+   "collapsible": 1,
    "fieldname": "auto_submit_section",
    "fieldtype": "Section Break",
    "label": "Auto Processing"
@@ -275,6 +281,7 @@
    "options": "Email"
   },
   {
+   "collapsible": 1,
    "fieldname": "webhook_section",
    "fieldtype": "Section Break",
    "label": "Webhooks"
@@ -297,6 +304,7 @@
    "label": "Advanced"
   },
   {
+   "collapsible": 1,
    "fieldname": "debug_section",
    "fieldtype": "Section Break",
    "label": "Debug & Logging"
@@ -327,6 +335,7 @@
    "label": "Log Retention (Days)"
   },
   {
+   "collapsible": 1,
    "fieldname": "performance_section",
    "fieldtype": "Section Break",
    "label": "Performance"
@@ -357,6 +366,7 @@
    "label": "Connection Pool Size"
   },
   {
+   "collapsible": 1,
    "fieldname": "token_section",
    "fieldtype": "Section Break",
    "label": "Token Cache (Internal)"
