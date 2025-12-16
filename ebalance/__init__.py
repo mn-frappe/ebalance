@@ -8,13 +8,23 @@ eBalance - Mongolia Financial Reporting System Integration for ERPNext
 
 Integrates with Ministry of Finance (Сангийн яам) eBalance system for:
 - Financial Statements (Санхүүгийн тайлан)
-- Balance Sheet (Санхүү байдлын тайлан)
-- Income Statement (Орлогын тайлан)
-- Cash Flow Statement (Мөнгөн гүйлгээний тайлан)
+- Balance Sheet (Санхүү байдлын тайлан - СБТ)
+- Income Statement (Орлогын үр дүнгийн тайлан - ОҮТ)
+- Cash Flow Statement (Мөнгөн гүйлгээний тайлан - МГТ)
 
-100% API Coverage:
+100% Integration Coverage:
 - 10/10 eBalance API endpoints implemented
-- Full ERPNext Trial Balance integration
+- 154/154 MOF Standard Accounts (НББОУС) mapped
+- Full ERPNext Trial Balance to MOF transformation
+- Intelligent auto-mapping between ERPNext and MOF accounts
+- Complete report generation workflow
+
+Performance Optimizations (v1.1.1):
+- Redis caching for MOF accounts and balances
+- Connection pooling for API requests
+- Batch database operations
+- Precompiled keyword matching
+- Optimized GL queries with indexes
 """
 
-__version__ = "1.0.2"
+__version__ = "1.1.1"

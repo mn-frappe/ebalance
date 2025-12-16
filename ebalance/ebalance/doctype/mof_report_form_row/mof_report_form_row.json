@@ -1,0 +1,181 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "format:{form_code}-{row_code}",
+ "creation": "2024-12-16 20:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "form_section",
+  "form_code",
+  "form_name",
+  "form_name_mn",
+  "form_id",
+  "col_break_1",
+  "row_code",
+  "row_name_mn",
+  "row_order",
+  "mapping_section",
+  "mof_accounts",
+  "calculation_formula",
+  "settings_section",
+  "is_total_row",
+  "is_calculated",
+  "enabled",
+  "cell_id",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "form_section",
+   "fieldtype": "Section Break",
+   "label": "Form Information"
+  },
+  {
+   "fieldname": "form_code",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Form Code",
+   "options": "\nSBT-Jiliin\nSBT-Hagas\nOUT-Jiliin\nOUT-Hagas\nMGT-Jiliin\nMGT-Hagas\nOMT-Jiliin\nOMT-Hagas",
+   "reqd": 1,
+   "description": "MOF report form code (СБТ=Balance Sheet, ОҮТ=Income Statement, МГТ=Cash Flow, ӨМТ=Equity Changes)"
+  },
+  {
+   "fieldname": "form_name",
+   "fieldtype": "Data",
+   "label": "Form Name (EN)"
+  },
+  {
+   "fieldname": "form_name_mn",
+   "fieldtype": "Data",
+   "label": "Form Name (MN)",
+   "description": "Тайлангийн нэр (Монгол)"
+  },
+  {
+   "fieldname": "form_id",
+   "fieldtype": "Int",
+   "label": "Form ID",
+   "description": "MOF eBalance form ID (from getReportData API)"
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "row_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Row Code",
+   "reqd": 1,
+   "description": "MOF row code (e.g., СБТ.1, СБТ.1.1, СБТ.1.1.1)"
+  },
+  {
+   "fieldname": "row_name_mn",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Row Name (MN)",
+   "description": "Мөрийн нэр"
+  },
+  {
+   "fieldname": "row_order",
+   "fieldtype": "Int",
+   "label": "Row Order",
+   "description": "Display order in form"
+  },
+  {
+   "fieldname": "mapping_section",
+   "fieldtype": "Section Break",
+   "label": "Account Mapping"
+  },
+  {
+   "fieldname": "mof_accounts",
+   "fieldtype": "Table",
+   "label": "MOF Accounts",
+   "options": "MOF Report Form Row Account",
+   "description": "MOF account codes that contribute to this row"
+  },
+  {
+   "fieldname": "calculation_formula",
+   "fieldtype": "Small Text",
+   "label": "Calculation Formula",
+   "description": "Formula for calculated rows (e.g., СБТ.1.1 + СБТ.1.2 + СБТ.1.3)"
+  },
+  {
+   "fieldname": "settings_section",
+   "fieldtype": "Section Break",
+   "label": "Settings"
+  },
+  {
+   "fieldname": "is_total_row",
+   "fieldtype": "Check",
+   "default": "0",
+   "label": "Is Total Row",
+   "description": "This row is a subtotal/total of other rows"
+  },
+  {
+   "fieldname": "is_calculated",
+   "fieldtype": "Check",
+   "default": "0",
+   "label": "Is Calculated",
+   "description": "Value is calculated from formula, not from accounts"
+  },
+  {
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "default": "1",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "cell_id",
+   "fieldtype": "Int",
+   "label": "Cell ID",
+   "description": "eBalance cell ID for data submission (from getReportData)"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-16 20:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "eBalance",
+ "name": "MOF Report Form Row",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 0,
+ "sort_field": "row_order",
+ "sort_order": "ASC",
+ "states": [],
+ "title_field": "row_code",
+ "track_changes": 1
+}

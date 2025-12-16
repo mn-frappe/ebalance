@@ -4,16 +4,29 @@
 # pyright: reportMissingImports=false, reportAttributeAccessIssue=false
 
 """
-eBalance API - HTTP Client Module
+eBalance API - HTTP Client Module (Optimized v1.1)
 
-Base HTTP client for eBalance API requests with retry logic,
-error handling, and request logging.
+Base HTTP client for eBalance API requests with:
+- Connection pooling
+- Retry logic with exponential backoff
+- Request timeout management
+- Response caching
+- Error handling and logging
 """
 
 import frappe
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+from urllib3 import PoolManager
+import ssl
+from typing import Optional, Dict, Any
+from functools import lru_cache
+
+
+# Global session for connection reuse
+_SESSION: Optional[requests.Session] = None
+_SESSION_ENV: Optional[str] = None
 
 
 class EBalanceHTTPError(Exception):
@@ -26,7 +39,13 @@ class EBalanceHTTPError(Exception):
 
 class EBalanceHTTPClient:
 	"""
-	HTTP client for eBalance API with retry logic and logging.
+	HTTP client for eBalance API with connection pooling and retry logic.
+	
+	Performance Optimizations:
+	- Global session reuse (connection pooling)
+	- Configurable connection pool size
+	- Exponential backoff on retries
+	- Keep-alive connections
 	
 	API Gateway (api.frappe.mn):
 	- Production: /ebalance/
@@ -50,10 +69,15 @@ class EBalanceHTTPClient:
 		"Production": "https://inspector-ebalance.mof.gov.mn"
 	}
 	
+	# Connection pool settings
+	POOL_CONNECTIONS = 10  # Number of connection pools
+	POOL_MAXSIZE = 20  # Max connections per pool
+	POOL_BLOCK = False  # Don't block when pool is full
+	
 	def __init__(self, settings=None):
-		"""Initialize HTTP client"""
+		"""Initialize HTTP client with connection pooling"""
 		self.settings = settings or self._get_settings()
-		self.session = self._create_session()
+		self.session = self._get_or_create_session()
 	
 	def _get_settings(self):
 		"""Get eBalance Settings"""
@@ -62,21 +86,52 @@ class EBalanceHTTPClient:
 		except Exception:
 			return None
 	
-	def _create_session(self):
-		"""Create requests session with retry logic"""
+	def _get_or_create_session(self) -> requests.Session:
+		"""Get global session or create new one (connection pooling)"""
+		global _SESSION, _SESSION_ENV
+		
+		env = self.settings.environment if self.settings else "Staging"
+		
+		# Reuse existing session if same environment
+		if _SESSION is not None and _SESSION_ENV == env:
+			return _SESSION
+		
+		# Create new session
+		_SESSION = self._create_session()
+		_SESSION_ENV = env
+		
+		return _SESSION
+	
+	def _create_session(self) -> requests.Session:
+		"""Create requests session with optimized settings"""
 		session = requests.Session()
 		
-		# Configure retries
+		# Configure retries with exponential backoff
 		retries = Retry(
 			total=3,
-			backoff_factor=0.5,
-			status_forcelist=[500, 502, 503, 504],
-			allowed_methods=["GET", "POST"]
+			backoff_factor=0.5,  # 0.5, 1.0, 2.0 seconds
+			status_forcelist=[500, 502, 503, 504, 429],
+			allowed_methods=["GET", "POST"],
+			raise_on_status=False  # Don't raise, we handle manually
 		)
 		
-		adapter = HTTPAdapter(max_retries=retries)
+		# Create adapter with connection pooling
+		adapter = HTTPAdapter(
+			max_retries=retries,
+			pool_connections=self.POOL_CONNECTIONS,
+			pool_maxsize=self.POOL_MAXSIZE,
+			pool_block=self.POOL_BLOCK
+		)
+		
 		session.mount("https://", adapter)
 		session.mount("http://", adapter)
+		
+		# Set default headers for all requests
+		session.headers.update({
+			"Accept": "application/json",
+			"Accept-Encoding": "gzip, deflate",
+			"Connection": "keep-alive"
+		})
 		
 		return session
 	

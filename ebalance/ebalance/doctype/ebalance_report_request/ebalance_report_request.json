@@ -11,17 +11,28 @@
   "column_break_1",
   "report_type",
   "status",
+  "company_section",
+  "company",
+  "fiscal_year",
+  "column_break_company",
+  "from_date",
+  "to_date",
   "dates_section",
   "begin_date",
   "end_date",
   "column_break_dates",
   "created_user_info",
   "prev_config_name",
+  "report_data_section",
+  "balance_sheet_preview",
+  "income_statement_preview",
+  "report_summary",
   "submission_section",
   "submitted_date",
   "confirmed_date",
   "column_break_sub",
-  "is_confirmed"
+  "is_confirmed",
+  "validation_errors"
  ],
  "fields": [
   {
@@ -65,22 +76,59 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Status",
-   "options": "Draft\nIn Progress\nSubmitted\nConfirmed\nRejected"
+   "options": "Draft\nGenerating\nReady\nIn Progress\nSubmitted\nConfirmed\nRejected\nFailed"
+  },
+  {
+   "fieldname": "company_section",
+   "fieldtype": "Section Break",
+   "label": "ERPNext Data Source"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "fiscal_year",
+   "fieldtype": "Link",
+   "label": "Fiscal Year",
+   "options": "Fiscal Year"
+  },
+  {
+   "fieldname": "column_break_company",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date",
+   "reqd": 1
   },
   {
    "fieldname": "dates_section",
    "fieldtype": "Section Break",
-   "label": "Period Dates"
+   "label": "eBalance Period Dates"
   },
   {
    "fieldname": "begin_date",
    "fieldtype": "Datetime",
-   "label": "Begin Date"
+   "label": "Begin Date",
+   "read_only": 1
   },
   {
    "fieldname": "end_date",
    "fieldtype": "Datetime",
-   "label": "End Date"
+   "label": "End Date",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_dates",
@@ -89,12 +137,39 @@
   {
    "fieldname": "created_user_info",
    "fieldtype": "Data",
-   "label": "Created By (eBalance)"
+   "label": "Created By (eBalance)",
+   "read_only": 1
   },
   {
    "fieldname": "prev_config_name",
    "fieldtype": "Data",
-   "label": "Previous Period Config"
+   "label": "Previous Period Config",
+   "read_only": 1
+  },
+  {
+   "fieldname": "report_data_section",
+   "fieldtype": "Section Break",
+   "label": "Generated Report Data"
+  },
+  {
+   "fieldname": "balance_sheet_preview",
+   "fieldtype": "Code",
+   "label": "Balance Sheet Preview (JSON)",
+   "options": "JSON",
+   "read_only": 1
+  },
+  {
+   "fieldname": "income_statement_preview",
+   "fieldtype": "Code",
+   "label": "Income Statement Preview (JSON)",
+   "options": "JSON",
+   "read_only": 1
+  },
+  {
+   "fieldname": "report_summary",
+   "fieldtype": "Small Text",
+   "label": "Report Summary",
+   "read_only": 1
   },
   {
    "fieldname": "submission_section",
@@ -104,12 +179,14 @@
   {
    "fieldname": "submitted_date",
    "fieldtype": "Datetime",
-   "label": "Submitted Date"
+   "label": "Submitted Date",
+   "read_only": 1
   },
   {
    "fieldname": "confirmed_date",
    "fieldtype": "Datetime",
-   "label": "Confirmed Date"
+   "label": "Confirmed Date",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_sub",
@@ -119,12 +196,20 @@
    "default": "0",
    "fieldname": "is_confirmed",
    "fieldtype": "Check",
-   "label": "Is Confirmed"
+   "label": "Is Confirmed",
+   "read_only": 1
+  },
+  {
+   "fieldname": "validation_errors",
+   "fieldtype": "Code",
+   "label": "Validation Errors",
+   "options": "JSON",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2024-12-16 12:00:00.000000",
+ "modified": "2024-12-16 20:00:00.000000",
  "modified_by": "Administrator",
  "module": "eBalance",
  "name": "eBalance Report Request",

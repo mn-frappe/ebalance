@@ -1,0 +1,70 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2024-12-16 20:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "mof_account",
+  "account_name_mn",
+  "root_type",
+  "enabled",
+  "weight"
+ ],
+ "fields": [
+  {
+   "fieldname": "mof_account",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "MOF Account",
+   "options": "MOF Account Mapping",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "mof_account.mof_account_name_mn",
+   "fieldname": "account_name_mn",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Account Name (MN)",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "mof_account.root_type",
+   "fieldname": "root_type",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Root Type",
+   "read_only": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Enabled"
+  },
+  {
+   "default": "1.0",
+   "fieldname": "weight",
+   "fieldtype": "Float",
+   "label": "Weight",
+   "description": "Multiplier (1.0 = add, -1.0 = subtract)"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 1,
+ "links": [],
+ "modified": "2024-12-16 20:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "eBalance",
+ "name": "MOF Report Form Row Account",
+ "naming_rule": "Random",
+ "owner": "Administrator",
+ "permissions": [],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 0
+}

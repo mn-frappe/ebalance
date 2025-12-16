@@ -25,6 +25,66 @@ frappe.ui.form.on('eBalance Settings', {
 			});
 		}, __('Actions'));
 		
+		// MOF Account Management buttons
+		frm.add_custom_button(__('Import MOF Accounts'), function() {
+			frappe.call({
+				method: 'ebalance.fixtures.mof_accounts.setup_mof_accounts',
+				freeze: true,
+				freeze_message: __('Importing 154 MOF Standard Accounts...'),
+				callback: function(r) {
+					if (r.message) {
+						frappe.show_alert({
+							message: __('Imported {0} accounts, skipped {1} existing', 
+								[r.message.imported, r.message.skipped]),
+							indicator: 'green'
+						});
+					}
+				}
+			});
+		}, __('MOF Accounts'));
+		
+		frm.add_custom_button(__('Auto-Map ERPNext Accounts'), function() {
+			frappe.confirm(
+				__('Auto-map ERPNext accounts to MOF codes based on account numbers and names?'),
+				function() {
+					frappe.call({
+						method: 'ebalance.api.auto_mapping.run_auto_mapping',
+						args: {
+							dry_run: false
+						},
+						freeze: true,
+						freeze_message: __('Auto-mapping accounts...'),
+						callback: function(r) {
+							if (r.message) {
+								frappe.msgprint({
+									title: __('Auto-Mapping Results'),
+									message: __('Matched: {0}<br>Need Manual Review: {1}',
+										[r.message.matched.length, r.message.unmatched.length]),
+									indicator: 'green'
+								});
+							}
+						}
+					});
+				}
+			);
+		}, __('MOF Accounts'));
+		
+		frm.add_custom_button(__('Preview Auto-Map'), function() {
+			frappe.call({
+				method: 'ebalance.api.auto_mapping.run_auto_mapping',
+				args: {
+					dry_run: true
+				},
+				freeze: true,
+				freeze_message: __('Analyzing accounts...'),
+				callback: function(r) {
+					if (r.message) {
+						show_mapping_preview(r.message);
+					}
+				}
+			});
+		}, __('MOF Accounts'));
+		
 		// Show connection status indicator
 		if (frm.doc.connection_status) {
 			if (frm.doc.connection_status.includes('✅')) {
@@ -80,3 +140,66 @@ frappe.ui.form.on('eBalance Settings', {
 		}
 	}
 });
+
+// Helper function to show mapping preview dialog
+function show_mapping_preview(results) {
+	let matched_html = '';
+	let unmatched_html = '';
+	
+	// Build matched accounts table
+	if (results.matched && results.matched.length > 0) {
+		matched_html = `
+			<h5>Can be auto-mapped (${results.matched.length})</h5>
+			<table class="table table-bordered table-sm">
+				<thead>
+					<tr>
+						<th>ERPNext Account</th>
+						<th>MOF Code</th>
+					</tr>
+				</thead>
+				<tbody>
+					${results.matched.slice(0, 20).map(m => `
+						<tr>
+							<td>${m.account_name || m.account}</td>
+							<td>${m.mof_code}</td>
+						</tr>
+					`).join('')}
+					${results.matched.length > 20 ? `<tr><td colspan="2">... and ${results.matched.length - 20} more</td></tr>` : ''}
+				</tbody>
+			</table>
+		`;
+	}
+	
+	// Build unmatched accounts table
+	if (results.unmatched && results.unmatched.length > 0) {
+		unmatched_html = `
+			<h5>Need manual mapping (${results.unmatched.length})</h5>
+			<table class="table table-bordered table-sm">
+				<thead>
+					<tr>
+						<th>ERPNext Account</th>
+						<th>Suggested MOF Codes</th>
+					</tr>
+				</thead>
+				<tbody>
+					${results.unmatched.slice(0, 20).map(m => `
+						<tr>
+							<td>${m.account_name || m.account}</td>
+							<td>${m.suggestions && m.suggestions.length > 0 
+								? m.suggestions.slice(0, 3).map(s => s.mof_code).join(', ')
+								: 'No suggestions'}</td>
+						</tr>
+					`).join('')}
+					${results.unmatched.length > 20 ? `<tr><td colspan="2">... and ${results.unmatched.length - 20} more</td></tr>` : ''}
+				</tbody>
+			</table>
+		`;
+	}
+	
+	frappe.msgprint({
+		title: __('Auto-Mapping Preview'),
+		message: matched_html + unmatched_html,
+		indicator: 'blue',
+		wide: true
+	});
+}

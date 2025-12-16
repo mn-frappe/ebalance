@@ -16,16 +16,19 @@ def after_install():
     - Create default eBalance Settings
     - Set up permissions
     - Add to Integrations workspace
+    - Import MOF standard accounts
     """
     create_default_settings()
     setup_permissions()
     create_custom_fields()
     add_to_integrations_workspace()
+    import_mof_accounts()
     frappe.db.commit()
     
     print("✅ eBalance app installed successfully!")
     print("   - Configure eBalance Settings to connect to MOF")
     print("   - Sync report periods to begin reporting")
+    print("   - MOF Standard Chart of Accounts (154) imported")
 
 
 def after_migrate():
@@ -34,10 +37,12 @@ def after_migrate():
     - Update custom fields
     - Sync permissions
     - Ensure eBalance is in Integrations workspace
+    - Import any missing MOF accounts
     """
     create_custom_fields()
     sync_fixtures()
     add_to_integrations_workspace()
+    import_mof_accounts()
     frappe.db.commit()
 
 
@@ -312,3 +317,28 @@ def remove_from_integrations_workspace():
         print("  ✓ Removed eBalance Settings from Integrations workspace")
     except Exception as e:
         print(f"  ⚠ Could not remove from Integrations workspace: {e}")
+
+
+def import_mof_accounts():
+    """
+    Import MOF Standard Chart of Accounts (154 accounts from НББОУС).
+    These are needed for MOF financial report generation.
+    """
+    try:
+        # Check if MOF Account Mapping DocType exists
+        if not frappe.db.exists("DocType", "MOF Account Mapping"):
+            print("  ⚠ MOF Account Mapping DocType not found - skipping import")
+            return
+        
+        from ebalance.fixtures.mof_accounts import import_mof_accounts as do_import
+        result = do_import()
+        
+        if result["imported"] > 0:
+            print(f"  ✓ Imported {result['imported']} MOF standard accounts")
+        if result["skipped"] > 0:
+            print(f"  ℹ Skipped {result['skipped']} existing accounts")
+        if result["errors"]:
+            print(f"  ⚠ {len(result['errors'])} errors during import")
+            
+    except Exception as e:
+        print(f"  ⚠ Could not import MOF accounts: {e}")

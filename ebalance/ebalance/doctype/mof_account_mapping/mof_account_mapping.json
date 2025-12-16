@@ -1,0 +1,157 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "field:mof_account_number",
+ "creation": "2024-12-16 20:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "mof_account_section",
+  "mof_account_number",
+  "mof_account_name",
+  "mof_account_name_mn",
+  "col_break_1",
+  "parent_mof_account",
+  "is_group",
+  "root_type",
+  "erp_mapping_section",
+  "mapped_accounts",
+  "settings_section",
+  "enabled",
+  "auto_mapped",
+  "notes"
+ ],
+ "fields": [
+  {
+   "fieldname": "mof_account_section",
+   "fieldtype": "Section Break",
+   "label": "MOF Standard Account"
+  },
+  {
+   "fieldname": "mof_account_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "MOF Account Number",
+   "reqd": 1,
+   "unique": 1,
+   "description": "Mongolian НББОУС standard account code (e.g., 1111, 2110)"
+  },
+  {
+   "fieldname": "mof_account_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Account Name (EN)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "mof_account_name_mn",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Account Name (MN)",
+   "description": "Дансны нэр (Монгол)"
+  },
+  {
+   "fieldname": "col_break_1",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "parent_mof_account",
+   "fieldtype": "Link",
+   "label": "Parent MOF Account",
+   "options": "MOF Account Mapping",
+   "description": "Parent account in MOF hierarchy"
+  },
+  {
+   "fieldname": "is_group",
+   "fieldtype": "Check",
+   "default": "0",
+   "label": "Is Group",
+   "description": "Whether this is a parent group account"
+  },
+  {
+   "fieldname": "root_type",
+   "fieldtype": "Select",
+   "label": "Root Type",
+   "options": "\nAsset\nLiability\nEquity\nIncome\nExpense",
+   "reqd": 1
+  },
+  {
+   "fieldname": "erp_mapping_section",
+   "fieldtype": "Section Break",
+   "label": "ERPNext Account Mapping"
+  },
+  {
+   "fieldname": "mapped_accounts",
+   "fieldtype": "Table",
+   "label": "Mapped ERPNext Accounts",
+   "options": "MOF Account Mapping Item",
+   "description": "ERPNext accounts that map to this MOF code"
+  },
+  {
+   "fieldname": "settings_section",
+   "fieldtype": "Section Break",
+   "label": "Settings"
+  },
+  {
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "default": "1",
+   "label": "Enabled",
+   "description": "Include in report generation"
+  },
+  {
+   "fieldname": "auto_mapped",
+   "fieldtype": "Check",
+   "default": "0",
+   "label": "Auto Mapped",
+   "read_only": 1,
+   "description": "Automatically mapped by system"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2024-12-16 20:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "eBalance",
+ "name": "MOF Account Mapping",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 0,
+ "sort_field": "mof_account_number",
+ "sort_order": "ASC",
+ "states": [],
+ "title_field": "mof_account_name_mn",
+ "track_changes": 1
+}
