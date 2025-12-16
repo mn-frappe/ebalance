@@ -133,12 +133,13 @@ class EBalanceHTTPClient:
 		if auth_header:
 			headers.update(auth_header)
 		
-		# Add additional headers from settings
+		# Add additional headers from settings (URL-encode Cyrillic characters)
 		if self.settings:
 			if self.settings.user_regno:
-				headers["userRegNo"] = self.settings.user_regno
+				from urllib.parse import quote
+				headers["userRegNo"] = quote(self.settings.user_regno)
 			if self.settings.org_regno:
-				headers["orgRegNo"] = self.settings.org_regno
+				headers["orgRegNo"] = str(self.settings.org_regno)
 		
 		# Set timeout
 		kwargs.setdefault("timeout", self.timeout)
