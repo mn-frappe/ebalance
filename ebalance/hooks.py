@@ -77,11 +77,16 @@ doc_events = {
 
 # Scheduled Tasks
 scheduler_events = {
+    "hourly": [
+        "ebalance.performance.auto_sync_report_periods",
+    ],
     "daily": [
         "ebalance.tasks.daily.execute",
+        "ebalance.performance.auto_submit_reports",
     ],
     "weekly": [
         "ebalance.tasks.weekly.execute",
+        "ebalance.performance.ensure_indexes",
     ],
 }
 

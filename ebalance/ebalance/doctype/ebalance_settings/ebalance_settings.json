@@ -28,6 +28,12 @@
   "column_break_company",
   "default_fiscal_year",
   "automation_tab",
+  "autopilot_section",
+  "autopilot_enabled",
+  "auto_generate_reports",
+  "column_break_autopilot",
+  "auto_submit_due_reports",
+  "autopilot_interval_hours",
   "sync_section",
   "auto_sync_periods",
   "sync_frequency",
@@ -40,6 +46,26 @@
   "column_break_auto",
   "notify_on_submission",
   "notify_email",
+  "section_erpnext_integration",
+  "enable_erpnext_account_sync",
+  "sync_on_account_change",
+  "column_break_erpnext_int",
+  "auto_create_mof_mapping",
+  "section_healthcare_integration",
+  "enable_healthcare_reports",
+  "healthcare_expense_accounts",
+  "column_break_healthcare_int",
+  "healthcare_revenue_accounts",
+  "section_education_integration",
+  "enable_education_reports",
+  "education_fee_accounts",
+  "column_break_education_int",
+  "education_expense_accounts",
+  "section_lending_integration",
+  "enable_lending_reports",
+  "lending_interest_accounts",
+  "column_break_lending_int",
+  "lending_loan_accounts",
   "webhook_section",
   "enable_webhooks",
   "webhook_secret",
@@ -206,6 +232,49 @@
   },
   {
    "collapsible": 1,
+   "collapsible_depends_on": "eval:!doc.autopilot_enabled",
+   "fieldname": "autopilot_section",
+   "fieldtype": "Section Break",
+   "label": "Autopilot"
+  },
+  {
+   "default": "0",
+   "description": "Enable fully automated financial reporting. Reports will be generated and submitted automatically.",
+   "fieldname": "autopilot_enabled",
+   "fieldtype": "Check",
+   "label": "Enable Autopilot",
+   "bold": 1
+  },
+  {
+   "default": "1",
+   "depends_on": "autopilot_enabled",
+   "description": "Automatically generate financial reports from GL Entries.",
+   "fieldname": "auto_generate_reports",
+   "fieldtype": "Check",
+   "label": "Auto-generate Reports"
+  },
+  {
+   "fieldname": "column_break_autopilot",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "depends_on": "autopilot_enabled",
+   "description": "Automatically submit reports when deadline approaches.",
+   "fieldname": "auto_submit_due_reports",
+   "fieldtype": "Check",
+   "label": "Auto-submit Due Reports"
+  },
+  {
+   "default": "24",
+   "depends_on": "autopilot_enabled",
+   "description": "Hours before deadline to auto-submit reports.",
+   "fieldname": "autopilot_interval_hours",
+   "fieldtype": "Int",
+   "label": "Auto-submit Hours Before Deadline"
+  },
+  {
+   "collapsible": 1,
    "fieldname": "sync_section",
    "fieldtype": "Section Break",
    "label": "Period Sync"
@@ -280,6 +349,144 @@
    "fieldtype": "Data",
    "label": "Notification Email",
    "options": "Email"
+  },
+  {
+   "collapsible": 1,
+   "collapsible_depends_on": "eval:!doc.enable_erpnext_account_sync",
+   "fieldname": "section_erpnext_integration",
+   "fieldtype": "Section Break",
+   "label": "ERPNext Integration",
+   "description": "Deep integration with ERPNext Chart of Accounts"
+  },
+  {
+   "default": "1",
+   "description": "Enable automatic synchronization of ERPNext accounts with MOF account codes.",
+   "fieldname": "enable_erpnext_account_sync",
+   "fieldtype": "Check",
+   "label": "Enable Account Sync",
+   "bold": 1
+  },
+  {
+   "default": "1",
+   "depends_on": "enable_erpnext_account_sync",
+   "description": "Automatically sync when accounts are created or modified.",
+   "fieldname": "sync_on_account_change",
+   "fieldtype": "Check",
+   "label": "Sync on Account Change"
+  },
+  {
+   "fieldname": "column_break_erpnext_int",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "1",
+   "depends_on": "enable_erpnext_account_sync",
+   "description": "Automatically create MOF Account Mapping for new accounts.",
+   "fieldname": "auto_create_mof_mapping",
+   "fieldtype": "Check",
+   "label": "Auto-create MOF Mapping"
+  },
+  {
+   "collapsible": 1,
+   "collapsible_depends_on": "eval:!doc.enable_healthcare_reports",
+   "fieldname": "section_healthcare_integration",
+   "fieldtype": "Section Break",
+   "label": "Healthcare Integration",
+   "description": "Integration with Frappe Healthcare for medical expense reporting"
+  },
+  {
+   "default": "0",
+   "description": "Enable healthcare-specific financial reporting.",
+   "fieldname": "enable_healthcare_reports",
+   "fieldtype": "Check",
+   "label": "Enable Healthcare Reports",
+   "bold": 1
+  },
+  {
+   "depends_on": "enable_healthcare_reports",
+   "description": "Account groups for healthcare expenses.",
+   "fieldname": "healthcare_expense_accounts",
+   "fieldtype": "Small Text",
+   "label": "Healthcare Expense Accounts"
+  },
+  {
+   "fieldname": "column_break_healthcare_int",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "enable_healthcare_reports",
+   "description": "Account groups for healthcare revenue.",
+   "fieldname": "healthcare_revenue_accounts",
+   "fieldtype": "Small Text",
+   "label": "Healthcare Revenue Accounts"
+  },
+  {
+   "collapsible": 1,
+   "collapsible_depends_on": "eval:!doc.enable_education_reports",
+   "fieldname": "section_education_integration",
+   "fieldtype": "Section Break",
+   "label": "Education Integration",
+   "description": "Integration with Frappe Education for educational institution reporting"
+  },
+  {
+   "default": "0",
+   "description": "Enable education-specific financial reporting.",
+   "fieldname": "enable_education_reports",
+   "fieldtype": "Check",
+   "label": "Enable Education Reports",
+   "bold": 1
+  },
+  {
+   "depends_on": "enable_education_reports",
+   "description": "Account groups for education fee revenue.",
+   "fieldname": "education_fee_accounts",
+   "fieldtype": "Small Text",
+   "label": "Education Fee Accounts"
+  },
+  {
+   "fieldname": "column_break_education_int",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "enable_education_reports",
+   "description": "Account groups for education expenses.",
+   "fieldname": "education_expense_accounts",
+   "fieldtype": "Small Text",
+   "label": "Education Expense Accounts"
+  },
+  {
+   "collapsible": 1,
+   "collapsible_depends_on": "eval:!doc.enable_lending_reports",
+   "fieldname": "section_lending_integration",
+   "fieldtype": "Section Break",
+   "label": "Lending Integration",
+   "description": "Integration with Frappe Lending for loan and interest reporting"
+  },
+  {
+   "default": "0",
+   "description": "Enable lending-specific financial reporting.",
+   "fieldname": "enable_lending_reports",
+   "fieldtype": "Check",
+   "label": "Enable Lending Reports",
+   "bold": 1
+  },
+  {
+   "depends_on": "enable_lending_reports",
+   "description": "Account groups for interest income.",
+   "fieldname": "lending_interest_accounts",
+   "fieldtype": "Small Text",
+   "label": "Interest Income Accounts"
+  },
+  {
+   "fieldname": "column_break_lending_int",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "enable_lending_reports",
+   "description": "Account groups for loan assets/liabilities.",
+   "fieldname": "lending_loan_accounts",
+   "fieldtype": "Small Text",
+   "label": "Loan Accounts"
   },
   {
    "collapsible": 1,
