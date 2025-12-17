@@ -14,10 +14,15 @@ Integrates with Ministry of Finance (Сангийн яам) eBalance system for:
 
 100% Integration Coverage:
 - 10/10 eBalance API endpoints implemented
-- 154/154 MOF Standard Accounts (НББОУС) mapped
+- 154/154 MOF Standard Accounts (НББОУС) mapped from mn_chart.csv
 - Full ERPNext Trial Balance to MOF transformation
 - Intelligent auto-mapping between ERPNext and MOF accounts
 - Complete report generation workflow
+
+100% MOF Chart of Accounts:
+- All 154 accounts from mn_chart.csv imported as fixtures
+- Account codes 1000-9900 with Mongolian names
+- Full hierarchy: Assets, Liabilities, Equity, Revenue, Expenses
 
 Performance Optimizations (v1.1.1):
 - Redis caching for MOF accounts and balances
@@ -26,11 +31,12 @@ Performance Optimizations (v1.1.1):
 - Precompiled keyword matching
 - Optimized GL queries with indexes
 
-Features (v1.2.0):
+Features (v1.3.0):
 - Comprehensive logging utilities (logger.py)
 - Autopilot mode for auto-fetch and auto-submit reports
 - Incremental GL aggregation caching
 - Multi-company entity support
+- Complete MOF fixtures (mof_accounts.py)
 """
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
