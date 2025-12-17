@@ -96,7 +96,8 @@
    "collapsible": 1,
    "fieldname": "environment_section",
    "fieldtype": "Section Break",
-   "label": "Environment"
+   "label": "Environment",
+   "collapsible_depends_on": "eval:0"
   },
   {
    "default": "Staging",
@@ -123,7 +124,8 @@
    "collapsible": 1,
    "fieldname": "auth_section",
    "fieldtype": "Section Break",
-   "label": "Authentication (ITC OAuth2)"
+   "label": "Authentication (ITC OAuth2)",
+   "collapsible_depends_on": "eval:0"
   },
   {
    "default": "https://auth.itc.gov.mn/auth/realms/ITC",
@@ -177,7 +179,8 @@
    "collapsible": 1,
    "fieldname": "api_section",
    "fieldtype": "Section Break",
-   "label": "API Connection"
+   "label": "API Connection",
+   "collapsible_depends_on": "eval:0"
   },
   {
    "description": "Auto-set based on environment",
@@ -205,7 +208,8 @@
    "collapsible": 1,
    "fieldname": "company_section",
    "fieldtype": "Section Break",
-   "label": "Company Settings"
+   "label": "Company Settings",
+   "collapsible_depends_on": "eval:0"
   },
   {
    "description": "ERPNext company. Financial reports will be generated from this company's GL Entries.",
@@ -232,7 +236,7 @@
   },
   {
    "collapsible": 1,
-   "collapsible_depends_on": "eval:!doc.autopilot_enabled",
+   "collapsible_depends_on": "eval:0",
    "fieldname": "autopilot_section",
    "fieldtype": "Section Break",
    "label": "Autopilot"
@@ -277,7 +281,8 @@
    "collapsible": 1,
    "fieldname": "sync_section",
    "fieldtype": "Section Break",
-   "label": "Period Sync"
+   "label": "Period Sync",
+   "collapsible_depends_on": "eval:0"
   },
   {
    "default": "1",
@@ -315,7 +320,8 @@
    "collapsible": 1,
    "fieldname": "auto_submit_section",
    "fieldtype": "Section Break",
-   "label": "Auto Processing"
+   "label": "Auto Processing",
+   "collapsible_depends_on": "eval:0"
   },
   {
    "default": "1",
@@ -352,7 +358,7 @@
   },
   {
    "collapsible": 1,
-   "collapsible_depends_on": "eval:!doc.enable_erpnext_account_sync",
+   "collapsible_depends_on": "eval:0",
    "fieldname": "section_erpnext_integration",
    "fieldtype": "Section Break",
    "label": "ERPNext Integration",
@@ -388,7 +394,7 @@
   },
   {
    "collapsible": 1,
-   "collapsible_depends_on": "eval:!doc.enable_healthcare_reports",
+   "collapsible_depends_on": "eval:0",
    "fieldname": "section_healthcare_integration",
    "fieldtype": "Section Break",
    "label": "Healthcare Integration",
@@ -422,7 +428,7 @@
   },
   {
    "collapsible": 1,
-   "collapsible_depends_on": "eval:!doc.enable_education_reports",
+   "collapsible_depends_on": "eval:0",
    "fieldname": "section_education_integration",
    "fieldtype": "Section Break",
    "label": "Education Integration",
@@ -456,7 +462,7 @@
   },
   {
    "collapsible": 1,
-   "collapsible_depends_on": "eval:!doc.enable_lending_reports",
+   "collapsible_depends_on": "eval:0",
    "fieldname": "section_lending_integration",
    "fieldtype": "Section Break",
    "label": "Lending Integration",
@@ -492,7 +498,8 @@
    "collapsible": 1,
    "fieldname": "webhook_section",
    "fieldtype": "Section Break",
-   "label": "Webhooks"
+   "label": "Webhooks",
+   "collapsible_depends_on": "eval:0"
   },
   {
    "default": "0",
@@ -515,7 +522,8 @@
    "collapsible": 1,
    "fieldname": "debug_section",
    "fieldtype": "Section Break",
-   "label": "Debug & Logging"
+   "label": "Debug & Logging",
+   "collapsible_depends_on": "eval:0"
   },
   {
    "default": "0",
@@ -546,7 +554,8 @@
    "collapsible": 1,
    "fieldname": "performance_section",
    "fieldtype": "Section Break",
-   "label": "Performance"
+   "label": "Performance",
+   "collapsible_depends_on": "eval:0"
   },
   {
    "default": "60",
@@ -577,7 +586,8 @@
    "collapsible": 1,
    "fieldname": "token_section",
    "fieldtype": "Section Break",
-   "label": "Token Cache (Internal)"
+   "label": "Token Cache (Internal)",
+   "collapsible_depends_on": "eval:0"
   },
   {
    "fieldname": "access_token",

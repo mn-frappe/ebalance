@@ -3,8 +3,8 @@ frappe.ui.form.on('eBalance Settings', {
 		// Toggle integration sections based on installed apps
 		toggle_integration_sections(frm);
 		
-		// Add custom buttons
-		frm.add_custom_button(__('Test Connection'), function() {
+		// Add Test Connection button next to Save (inner button)
+		frm.page.add_inner_button(__('Test Connection'), function() {
 			frm.call('test_connection').then(r => {
 				if (r.message && r.message.success) {
 					frappe.show_alert({
@@ -14,8 +14,9 @@ frappe.ui.form.on('eBalance Settings', {
 				}
 				frm.reload_doc();
 			});
-		}, __('Actions'));
+		});
 		
+		// Add other actions in dropdown
 		frm.add_custom_button(__('Sync Periods'), function() {
 			frm.call('sync_report_periods').then(r => {
 				if (r.message) {
