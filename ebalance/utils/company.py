@@ -20,9 +20,8 @@ For multi-company support, use:
 import frappe
 from typing import Optional
 
-# Import from etax.mn_entity (the source module)
-# ebalance/mn_entity.py is a symlink to etax/mn_entity.py
-from etax.mn_entity import (  # type: ignore
+# Import from local mn_entity module (each app has its own copy)
+from ebalance.mn_entity import (
     get_entity_for_doc,
     get_entity_for_company,
     get_default_company,
