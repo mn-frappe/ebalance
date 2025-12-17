@@ -1,3 +1,17 @@
+## [1.4.0](https://github.com/mn-frappe/ebalance/compare/v1.3.0...v1.4.0) (2025-12-17)
+
+### 🚀 Features
+
+* add CodeQL, CODEOWNERS, MkDocs documentation ([1891b59](https://github.com/mn-frappe/ebalance/commit/1891b5965fa7d99bdbc10121cc9ca9e1989ab75c))
+* add mypy type checking, matrix testing, enhanced VS Code ([2050a04](https://github.com/mn-frappe/ebalance/commit/2050a0411ac90d9b3112c3e327cd34caed7e85ab))
+* add semantic-release for automatic versioning ([b0ee3a3](https://github.com/mn-frappe/ebalance/commit/b0ee3a3151a78c9fbf51f29fb5054f24f168b812))
+* add telemetry for GitHub issue auto-creation ([2683524](https://github.com/mn-frappe/ebalance/commit/268352483b49fc059fcf4157a22b59029c259cba))
+
+### 🐛 Bug Fixes
+
+* resolve type errors in telemetry module ([914bf5c](https://github.com/mn-frappe/ebalance/commit/914bf5ce04583405d553c23d41ac480cc5b88d03))
+* semantic-release auth and missing npm package ([5fe7a98](https://github.com/mn-frappe/ebalance/commit/5fe7a981d43d0e2111cf6c8a5682f984d89c731d))
+
 # Changelog
 
 All notable changes to eBalance will be documented in this file.
