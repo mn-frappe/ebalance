@@ -12,6 +12,7 @@ account mappings based on the account name and type.
 
 import frappe
 from frappe import _
+from typing import Optional
 
 
 def on_update(doc, method=None):
@@ -26,7 +27,7 @@ def on_update(doc, method=None):
     # Only process if eBalance is enabled
     try:
         settings = frappe.get_single("eBalance Settings")
-        if not settings.enabled:
+        if not getattr(settings, "enabled", False):
             return
     except Exception:
         return
@@ -36,7 +37,7 @@ def on_update(doc, method=None):
     frappe.cache().delete_value(cache_key)
 
 
-def suggest_mof_mapping(account_name: str, account_type: str = None) -> str | None:
+def suggest_mof_mapping(account_name: str, account_type: Optional[str] = None) -> Optional[str]:
     """
     Suggest a MOF account mapping based on account name and type.
     
