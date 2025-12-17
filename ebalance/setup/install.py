@@ -230,6 +230,8 @@ def add_to_integrations_workspace():
     
     Creates a "MN Settings" card section if it doesn't exist (for when eBalance
     is installed before QPay/eBarimt), then adds eBalance Settings link.
+    
+    Properly calculates idx to avoid conflicts with other apps.
     """
     if not frappe.db.exists("Workspace", "Integrations"):
         return
@@ -237,14 +239,19 @@ def add_to_integrations_workspace():
     try:
         ws = frappe.get_doc("Workspace", "Integrations")
         
-        # Check if MN Settings card already exists
-        mn_card_exists = any(
-            link.label == "MN Settings" and link.type == "Card Break"
-            for link in ws.links
-        )
+        # Get the maximum idx to avoid conflicts
+        max_idx = max([link.idx or 0 for link in ws.links] or [0])
         
-        if not mn_card_exists:
-            # Add MN Settings card break
+        # Check if MN Settings card already exists and get its position
+        mn_card_idx = None
+        for link in ws.links:
+            if link.label == "MN Settings" and link.type == "Card Break":
+                mn_card_idx = link.idx
+                break
+        
+        if mn_card_idx is None:
+            # Add MN Settings card break at the end
+            max_idx += 1
             ws.append(
                 "links",
                 {
@@ -254,8 +261,10 @@ def add_to_integrations_workspace():
                     "is_query_report": 0,
                     "link_count": 0,
                     "onboard": 0,
+                    "idx": max_idx,
                 },
             )
+            mn_card_idx = max_idx
         
         # Check if eBalance Settings link already exists
         ebalance_link_exists = any(
@@ -264,7 +273,8 @@ def add_to_integrations_workspace():
         )
         
         if not ebalance_link_exists:
-            # Add eBalance Settings link
+            # Add eBalance Settings link right after MN Settings card
+            max_idx = max([link.idx or 0 for link in ws.links] or [0]) + 1
             ws.append(
                 "links",
                 {
@@ -277,6 +287,7 @@ def add_to_integrations_workspace():
                     "link_count": 0,
                     "onboard": 1,
                     "only_for": "",
+                    "idx": max_idx,
                 },
             )
             ws.save(ignore_permissions=True)
