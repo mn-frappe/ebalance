@@ -313,6 +313,10 @@ def add_to_integrations_workspace():
         
         ws.save(ignore_permissions=True)
         frappe.db.commit()
+        
+        # Clear bootinfo cache so changes appear without hard refresh
+        frappe.cache.delete_key("bootinfo")
+        
         print("  ✓ Added eBalance Settings to Integrations workspace (MN Settings section)")
     except Exception as e:
         print(f"  ⚠ Could not add to Integrations workspace: {e}")
