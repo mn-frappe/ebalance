@@ -2,16 +2,32 @@
 # Copyright (c) 2025, MN Frappe and contributors
 # License: GNU General Public License v3
 
+"""
+eBalance - Mongolia Ministry of Finance Financial Reporting
+
+Works with ERPNext and all ERPNext-based apps that create GL Entries:
+- ERPNext Core: Chart of Accounts, GL Entry, Period Closing
+- Healthcare: Patient billing GL entries
+- Education: Student fees GL entries
+- Lending: Loan accounting GL entries
+
+eBalance reports aggregate data from ERPNext's General Ledger,
+so it automatically includes transactions from all ERPNext-based apps.
+"""
+
 app_name = "ebalance"
 app_title = "eBalance"
-app_publisher = "MN Frappe"
-app_description = "Mongolia Ministry of Finance eBalance Financial Reporting System Integration for ERPNext"
-app_email = "info@1cloud.mn"
+app_publisher = "Digital Consulting Service LLC (Mongolia)"
+app_description = (
+    "Mongolia Ministry of Finance eBalance Financial Reporting System. "
+    "Works with ERPNext and all apps that create GL Entries (Healthcare, Education, Lending)."
+)
+app_email = "dev@frappe.mn"
 app_license = "gpl-3.0"
 app_logo_url = "/assets/ebalance/images/ebalance_logo.png"
 
-# Required Apps
-required_apps = ["frappe"]
+# Required Apps - ERPNext required for Chart of Accounts and GL Entry
+required_apps = ["frappe", "erpnext"]
 
 # Includes in <head>
 app_include_css = "/assets/ebalance/css/ebalance.css"
@@ -39,9 +55,9 @@ fixtures = [
 ]
 
 # DocType Events - ERPNext Integration
-# These are registered only when ERPNext is installed
+# eBalance works with GL Entry which is created by ALL ERPNext-based apps
+# Healthcare, Education, Lending all create GL Entries that feed into eBalance reports
 doc_events = {
-    # ERPNext specific events - checked at runtime
     "Company": {
         "on_update": "ebalance.integrations.company.on_update",
     },
@@ -52,6 +68,10 @@ doc_events = {
     "GL Entry": {
         "on_update": "ebalance.integrations.gl_entry.on_update",
         "on_cancel": "ebalance.integrations.gl_entry.on_cancel",
+    },
+    # Account mapping for MOF standard chart
+    "Account": {
+        "on_update": "ebalance.integrations.account.on_update",
     },
 }
 
