@@ -25,6 +25,12 @@ Performance Optimizations (v1.1.1):
 - Batch database operations
 - Precompiled keyword matching
 - Optimized GL queries with indexes
+
+Features (v1.2.0):
+- Comprehensive logging utilities (logger.py)
+- Autopilot mode for auto-fetch and auto-submit reports
+- Incremental GL aggregation caching
+- Multi-company entity support
 """
 
-__version__ = "1.1.1"
+__version__ = "1.2.0"
