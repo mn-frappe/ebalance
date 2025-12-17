@@ -34,6 +34,7 @@ select = [
     "RUF",
 ]
 ignore = [
+    "B015",  # Useless comparison
     "B017", # assertRaises(Exception) - should be more specific
     "B018", # useless expression, not assigned to anything
     "B023", # function doesn't bind loop variable - will have last iteration's value
@@ -46,6 +47,10 @@ ignore = [
     "F403", # can't detect undefined names from * import
     "F405", # can't detect undefined names from * import
     "F722", # syntax error in forward type annotation
+    "RUF001",  # Cyrillic characters (valid for Mongolian)
+    "RUF002",  # Cyrillic in docstrings
+    "RUF012",  # Mutable class defaults
+    "RUF022",  # __all__ sorting
     "W191", # indentation contains tabs
 ]
 typing-modules = ["frappe.types.DF"]
@@ -54,17 +59,3 @@ typing-modules = ["frappe.types.DF"]
 quote-style = "double"
 indent-style = "tab"
 docstring-code-format = true
-
-[tool.ruff]
-line-length = 120
-target-version = "py311"
-
-[tool.ruff.lint]
-ignore = [
-    "RUF001",  # Cyrillic characters (valid for Mongolian)
-    "RUF002",  # Cyrillic in docstrings
-    "RUF012",  # Mutable class defaults
-    "RUF022",  # __all__ sorting
-    "B015",    # Useless comparison
-    "F401",    # Unused imports in __init__ files
-]
