@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Copyright (c) 2024, Digital Consulting Service LLC (Mongolia)
 # License: GNU General Public License v3
+# pyright: reportMissingImports=false, reportAttributeAccessIssue=false, reportArgumentType=false
 
 """
 eBalance Performance Utilities
@@ -15,6 +16,13 @@ from frappe.utils import flt, getdate, add_months, get_first_day, get_last_day
 from typing import Optional, List, Dict, Any
 import time
 import functools
+
+# Import logger utilities
+from ebalance.logger import (
+    log_info, log_debug, log_warning, log_error,
+    log_api_call, log_report, log_scheduler_task,
+    log_gl_aggregation, log_cache_operation
+)
 
 
 # =============================================================================
@@ -144,14 +152,17 @@ def calculate_monthly_balance(
     
     # Get fiscal year dates
     fy = frappe.get_doc("Fiscal Year", fiscal_year)
-    year_start = getdate(fy.year_start_date)
+    year_start = getdate(getattr(fy, "year_start_date", None))
+    
+    if not year_start:
+        return {"opening_debit": 0, "opening_credit": 0, "debit": 0, "credit": 0, "closing_debit": 0, "closing_credit": 0}
     
     # Calculate month dates
     month_start = get_first_day(f"{year_start.year if month >= year_start.month else year_start.year + 1}-{month:02d}-01")
     month_end = get_last_day(month_start)
     
     # Get opening balance (before month start)
-    opening = frappe.db.sql("""
+    opening_result = list(frappe.db.sql("""
         SELECT 
             COALESCE(SUM(debit), 0) as debit,
             COALESCE(SUM(credit), 0) as credit
@@ -160,10 +171,11 @@ def calculate_monthly_balance(
         AND account = %s
         AND posting_date < %s
         AND is_cancelled = 0
-    """, (company, account, month_start), as_dict=True)[0]
+    """, (company, account, month_start), as_dict=True))
+    opening = opening_result[0] if opening_result else {"debit": 0, "credit": 0}
     
     # Get month transactions
-    month_txn = frappe.db.sql("""
+    month_result = list(frappe.db.sql("""
         SELECT 
             COALESCE(SUM(debit), 0) as debit,
             COALESCE(SUM(credit), 0) as credit
@@ -172,12 +184,13 @@ def calculate_monthly_balance(
         AND account = %s
         AND posting_date BETWEEN %s AND %s
         AND is_cancelled = 0
-    """, (company, account, month_start, month_end), as_dict=True)[0]
+    """, (company, account, month_start, month_end), as_dict=True))
+    month_txn = month_result[0] if month_result else {"debit": 0, "credit": 0}
     
-    opening_debit = flt(opening.debit)
-    opening_credit = flt(opening.credit)
-    debit = flt(month_txn.debit)
-    credit = flt(month_txn.credit)
+    opening_debit = flt(opening.get("debit", 0))
+    opening_credit = flt(opening.get("credit", 0))
+    debit = flt(month_txn.get("debit", 0))
+    credit = flt(month_txn.get("credit", 0))
     
     return {
         "opening_debit": opening_debit,
@@ -248,11 +261,14 @@ def get_trial_balance_fast(
     
     result = []
     for acc in accounts:
-        balance = get_monthly_balance_cached(company, acc.account, fiscal_year, month)
-        result.append({
-            **acc,
-            **balance
-        })
+        acc_dict = acc if isinstance(acc, dict) else {}
+        acc_name = acc_dict.get("account", "")
+        if acc_name:
+            balance = get_monthly_balance_cached(company, acc_name, fiscal_year, month)
+            result.append({
+                **acc_dict,
+                **balance
+            })
     
     if use_cache:
         set_cached(key, result, ttl=3600)
@@ -354,6 +370,7 @@ def auto_sync_report_periods():
         frappe.log_error(f"Auto-sync report periods failed: {e}")
 
 
+@log_scheduler_task("Auto Submit Reports")
 def auto_submit_reports():
     """
     Automatically submit due reports.
@@ -361,26 +378,39 @@ def auto_submit_reports():
     """
     settings = frappe.get_single("eBalance Settings")
     if not getattr(settings, "auto_fetch_forms", False):
-        return
+        log_debug("Auto submit disabled - skipping")
+        return {"status": "skipped", "reason": "auto_submit_disabled"}
     
     # Find reports due for submission
+    from frappe.utils import today
     due_reports = frappe.get_all(
         "eBalance Report Period",
         filters={
             "status": "Draft",
-            "end_date": ["<=", frappe.utils.today()]
+            "end_date": ["<=", today()]
         },
         fields=["name", "company", "period_name"],
         limit=10
     )
     
+    submitted_count = 0
+    error_count = 0
+    
     for report in due_reports:
-        frappe.enqueue(
-            "ebalance.api.client.submit_report",
-            report_name=report.name,
-            queue="long",
-            timeout=600
-        )
+        try:
+            frappe.enqueue(
+                "ebalance.api.client.submit_report",
+                report_name=report.name,
+                queue="long",
+                timeout=600
+            )
+            log_info(f"Queued report submission", {"report": report.name, "company": report.company, "period": report.period_name})
+            submitted_count += 1
+        except Exception as e:
+            log_error(f"Failed to queue report submission {report.name}", exc=e)
+            error_count += 1
+    
+    return {"submitted": submitted_count, "errors": error_count, "total_found": len(due_reports)}
 
 
 # =============================================================================
@@ -402,17 +432,19 @@ def on_gl_entry_update(doc, method=None):
     )
     
     if fiscal_year:
-        month = getdate(doc.posting_date).month
-        
-        # Invalidate this account's cache for this month and onwards
-        for m in range(month, 13):
-            key = cache_key("monthly_balance", doc.company, doc.account, fiscal_year, m)
-            frappe.cache().delete_value(key)
-        
-        # Invalidate trial balance cache
-        for m in range(month, 13):
-            key = cache_key("trial_balance", doc.company, fiscal_year, m)
-            frappe.cache().delete_value(key)
+        posting_dt = getdate(doc.posting_date)
+        if posting_dt:
+            month = posting_dt.month
+            
+            # Invalidate this account's cache for this month and onwards
+            for m in range(month, 13):
+                key = cache_key("monthly_balance", doc.company, doc.account, fiscal_year, m)
+                frappe.cache().delete_value(key)
+            
+            # Invalidate trial balance cache
+            for m in range(month, 13):
+                key = cache_key("trial_balance", doc.company, fiscal_year, m)
+                frappe.cache().delete_value(key)
 
 
 # =============================================================================
