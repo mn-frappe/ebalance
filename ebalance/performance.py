@@ -10,20 +10,20 @@ Provides incremental GL aggregation, caching, and performance optimizations
 for high-volume financial reporting operations.
 """
 
-import frappe
-from frappe import _
-from frappe.utils import flt, getdate, add_months, get_first_day, get_last_day
-from typing import Optional, List, Dict, Any
-import time
 import functools
+import time
+from typing import Any
+
+import frappe
+from frappe.utils import flt, get_first_day, get_last_day, getdate
 
 # Import logger utilities
 from ebalance.logger import (
-    log_info, log_debug, log_warning, log_error,
-    log_api_call, log_report, log_scheduler_task,
-    log_gl_aggregation, log_cache_operation
+    log_debug,
+    log_error,
+    log_info,
+    log_scheduler_task,
 )
-
 
 # =============================================================================
 # Performance Indexes
@@ -69,12 +69,12 @@ def ensure_indexes():
             index_name = idx["name"]
             table = idx["table"]
             columns = ", ".join([f"`{c}`" for c in idx["columns"]])
-            
+
             # Check if index exists
             existing = frappe.db.sql(f"""
                 SHOW INDEX FROM `{table}` WHERE Key_name = %s
             """, (index_name,))
-            
+
             if not existing:
                 frappe.db.sql(f"""
                     CREATE INDEX `{index_name}` ON `{table}` ({columns})
@@ -118,23 +118,23 @@ def get_monthly_balance_cached(
     account: str,
     fiscal_year: str,
     month: int
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """
     Get monthly account balance from cache or calculate.
-    
+
     Returns:
         dict with opening_debit, opening_credit, debit, credit, closing_debit, closing_credit
     """
     key = cache_key("monthly_balance", company, account, fiscal_year, month)
     cached = get_cached(key)
-    
+
     if cached:
         return cached
-    
+
     # Calculate and cache
     balance = calculate_monthly_balance(company, account, fiscal_year, month)
     set_cached(key, balance, ttl=86400)  # Cache for 24 hours
-    
+
     return balance
 
 
@@ -143,27 +143,27 @@ def calculate_monthly_balance(
     account: str,
     fiscal_year: str,
     month: int
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """
     Calculate monthly balance for an account.
     Uses optimized query with GL Entry indexes.
     """
-    from frappe.utils import get_first_day, get_last_day, getdate
-    
+    from frappe.utils import getdate
+
     # Get fiscal year dates
     fy = frappe.get_doc("Fiscal Year", fiscal_year)
     year_start = getdate(getattr(fy, "year_start_date", None))
-    
+
     if not year_start:
         return {"opening_debit": 0, "opening_credit": 0, "debit": 0, "credit": 0, "closing_debit": 0, "closing_credit": 0}
-    
+
     # Calculate month dates
     month_start = get_first_day(f"{year_start.year if month >= year_start.month else year_start.year + 1}-{month:02d}-01")
     month_end = get_last_day(month_start)
-    
+
     # Get opening balance (before month start)
     opening_result = list(frappe.db.sql("""
-        SELECT 
+        SELECT
             COALESCE(SUM(debit), 0) as debit,
             COALESCE(SUM(credit), 0) as credit
         FROM `tabGL Entry`
@@ -173,10 +173,10 @@ def calculate_monthly_balance(
         AND is_cancelled = 0
     """, (company, account, month_start), as_dict=True))
     opening = opening_result[0] if opening_result else {"debit": 0, "credit": 0}
-    
+
     # Get month transactions
     month_result = list(frappe.db.sql("""
-        SELECT 
+        SELECT
             COALESCE(SUM(debit), 0) as debit,
             COALESCE(SUM(credit), 0) as credit
         FROM `tabGL Entry`
@@ -186,12 +186,12 @@ def calculate_monthly_balance(
         AND is_cancelled = 0
     """, (company, account, month_start, month_end), as_dict=True))
     month_txn = month_result[0] if month_result else {"debit": 0, "credit": 0}
-    
+
     opening_debit = flt(opening.get("debit", 0))
     opening_credit = flt(opening.get("credit", 0))
     debit = flt(month_txn.get("debit", 0))
     credit = flt(month_txn.get("credit", 0))
-    
+
     return {
         "opening_debit": opening_debit,
         "opening_credit": opening_credit,
@@ -213,7 +213,7 @@ def recalculate_period_cache(company: str, fiscal_year: str, from_month: int = 1
         filters={"company": company, "is_group": 0},
         pluck="name"
     )
-    
+
     # Invalidate and recalculate
     for account in accounts:
         for month in range(from_month, 13):
@@ -231,21 +231,21 @@ def get_trial_balance_fast(
     fiscal_year: str,
     month: int,
     use_cache: bool = True
-) -> List[Dict]:
+) -> list[dict]:
     """
     Get trial balance with optimized caching.
     Returns list of accounts with balances.
     """
     key = cache_key("trial_balance", company, fiscal_year, month)
-    
+
     if use_cache:
         cached = get_cached(key)
         if cached:
             return cached
-    
+
     # Get all accounts with MOF mapping
     accounts = frappe.db.sql("""
-        SELECT 
+        SELECT
             a.name as account,
             a.account_type,
             a.root_type,
@@ -258,7 +258,7 @@ def get_trial_balance_fast(
         AND a.is_group = 0
         ORDER BY a.name
     """, (company,), as_dict=True)
-    
+
     result = []
     for acc in accounts:
         acc_dict = acc if isinstance(acc, dict) else {}
@@ -269,10 +269,10 @@ def get_trial_balance_fast(
                 **acc_dict,
                 **balance
             })
-    
+
     if use_cache:
         set_cached(key, result, ttl=3600)
-    
+
     return result
 
 
@@ -285,10 +285,10 @@ def generate_mof_report_data(
     fiscal_year: str,
     month: int,
     report_type: str = "BS01"
-) -> Dict:
+) -> dict:
     """
     Generate MOF report data with caching.
-    
+
     Args:
         company: Company name
         fiscal_year: Fiscal year
@@ -297,20 +297,20 @@ def generate_mof_report_data(
     """
     key = cache_key("mof_report", company, fiscal_year, month, report_type)
     cached = get_cached(key)
-    
+
     if cached:
         return cached
-    
+
     # Get trial balance
     trial_balance = get_trial_balance_fast(company, fiscal_year, month)
-    
+
     # Aggregate by MOF account
     mof_totals = {}
     for acc in trial_balance:
         mof_code = acc.get("mof_account_number")
         if not mof_code:
             continue
-        
+
         if mof_code not in mof_totals:
             mof_totals[mof_code] = {
                 "mof_account_number": mof_code,
@@ -322,10 +322,10 @@ def generate_mof_report_data(
                 "closing_debit": 0,
                 "closing_credit": 0,
             }
-        
+
         for field in ["opening_debit", "opening_credit", "debit", "credit", "closing_debit", "closing_credit"]:
             mof_totals[mof_code][field] += flt(acc.get(field, 0))
-    
+
     result = {
         "company": company,
         "fiscal_year": fiscal_year,
@@ -333,7 +333,7 @@ def generate_mof_report_data(
         "report_type": report_type,
         "rows": list(mof_totals.values())
     }
-    
+
     set_cached(key, result, ttl=3600)
     return result
 
@@ -350,14 +350,14 @@ def auto_sync_report_periods():
     settings = frappe.get_single("eBalance Settings")
     if not getattr(settings, "auto_sync_periods", False):
         return
-    
+
     try:
         from ebalance.api.client import EBalanceClient
         client = EBalanceClient()
-        
+
         # Fetch periods from API
         periods = client.get_report_periods() if hasattr(client, "get_report_periods") else []
-        
+
         # Update local records
         for period in periods:
             frappe.enqueue(
@@ -365,7 +365,7 @@ def auto_sync_report_periods():
                 period_data=period,
                 queue="short"
             )
-            
+
     except Exception as e:
         frappe.log_error(f"Auto-sync report periods failed: {e}")
 
@@ -380,7 +380,7 @@ def auto_submit_reports():
     if not getattr(settings, "auto_fetch_forms", False):
         log_debug("Auto submit disabled - skipping")
         return {"status": "skipped", "reason": "auto_submit_disabled"}
-    
+
     # Find reports due for submission
     from frappe.utils import today
     due_reports = frappe.get_all(
@@ -392,10 +392,10 @@ def auto_submit_reports():
         fields=["name", "company", "period_name"],
         limit=10
     )
-    
+
     submitted_count = 0
     error_count = 0
-    
+
     for report in due_reports:
         try:
             frappe.enqueue(
@@ -404,12 +404,12 @@ def auto_submit_reports():
                 queue="long",
                 timeout=600
             )
-            log_info(f"Queued report submission", {"report": report.name, "company": report.company, "period": report.period_name})
+            log_info("Queued report submission", {"report": report.name, "company": report.company, "period": report.period_name})
             submitted_count += 1
         except Exception as e:
             log_error(f"Failed to queue report submission {report.name}", exc=e)
             error_count += 1
-    
+
     return {"submitted": submitted_count, "errors": error_count, "total_found": len(due_reports)}
 
 
@@ -423,24 +423,24 @@ def on_gl_entry_update(doc, method=None):
     """
     if not doc.company or not doc.account:
         return
-    
+
     # Get fiscal year for the posting date
     fiscal_year = frappe.get_value(
         "Fiscal Year",
         {"year_start_date": ["<=", doc.posting_date], "year_end_date": [">=", doc.posting_date]},
         "name"
     )
-    
+
     if fiscal_year:
         posting_dt = getdate(doc.posting_date)
         if posting_dt:
             month = posting_dt.month
-            
+
             # Invalidate this account's cache for this month and onwards
             for m in range(month, 13):
                 key = cache_key("monthly_balance", doc.company, doc.account, fiscal_year, m)
                 frappe.cache().delete_value(key)
-            
+
             # Invalidate trial balance cache
             for m in range(month, 13):
                 key = cache_key("trial_balance", doc.company, fiscal_year, m)

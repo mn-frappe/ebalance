@@ -11,7 +11,7 @@ not necessarily all database records (reports, cards, etc. may not be installed)
 """
 
 import os
-import unittest
+
 import frappe
 from frappe.tests.utils import FrappeTestCase
 
@@ -68,7 +68,7 @@ class TestEBalanceSettingsDocType(FrappeTestCase):
         """Test eBalance Settings has required fields"""
         meta = frappe.get_meta("eBalance Settings")
         field_names = [f.fieldname for f in meta.fields]
-        
+
         required_fields = ["enabled", "environment", "company", "username", "password"]
         for field in required_fields:
             self.assertIn(field, field_names, f"Field '{field}' should exist in eBalance Settings")
@@ -88,7 +88,7 @@ class TestEBalanceReportPeriodDocType(FrappeTestCase):
         """Test Report Period has required fields"""
         meta = frappe.get_meta("eBalance Report Period")
         field_names = [f.fieldname for f in meta.fields]
-        
+
         required_fields = ["period_name", "begin_date", "end_date", "status"]
         for field in required_fields:
             self.assertIn(field, field_names, f"Field '{field}' should exist in eBalance Report Period")
@@ -160,7 +160,7 @@ class TestEBalanceFixtures(FrappeTestCase):
         """Test mof_accounts.py has proper content"""
         fixture_path = frappe.get_app_path("ebalance", "fixtures", "mof_accounts.py")
         if os.path.exists(fixture_path):
-            with open(fixture_path, "r", encoding="utf-8") as f:
+            with open(fixture_path, encoding="utf-8") as f:
                 content = f.read()
                 # Should have MOF_ACCOUNTS list
                 self.assertIn("MOF_ACCOUNTS", content, "mof_accounts.py should define MOF_ACCOUNTS")
@@ -206,7 +206,7 @@ class TestEBalanceTranslations(FrappeTestCase):
         """Test app has proper structure"""
         app_path = frappe.get_app_path("ebalance")
         self.assertTrue(os.path.isdir(app_path), "eBalance app path should exist")
-        
+
         # Check key directories
         self.assertTrue(os.path.isdir(os.path.join(app_path, "api")), "api directory should exist")
         self.assertTrue(os.path.isdir(os.path.join(app_path, "setup")), "setup directory should exist")
@@ -275,7 +275,7 @@ class TestEBalanceAutoMapping(FrappeTestCase):
     def test_auto_mapping_module_imports(self):
         """Test auto_mapping module can be imported"""
         try:
-            from ebalance.api import auto_mapping
+            from ebalance.api import auto_mapping  # noqa: F401
             self.assertTrue(True)
         except ImportError as e:
             self.fail(f"Failed to import auto_mapping module: {e}")
@@ -283,7 +283,7 @@ class TestEBalanceAutoMapping(FrappeTestCase):
     def test_transformer_module_imports(self):
         """Test transformer module can be imported"""
         try:
-            from ebalance.api import transformer
+            from ebalance.api import transformer  # noqa: F401
             self.assertTrue(True)
         except ImportError as e:
             self.fail(f"Failed to import transformer module: {e}")
@@ -339,7 +339,7 @@ class TestEBalanceReadme(FrappeTestCase):
         """Test README.md has substantial content"""
         readme_path = os.path.join(frappe.get_app_path("ebalance"), "..", "README.md")
         if os.path.exists(readme_path):
-            with open(readme_path, "r", encoding="utf-8") as f:
+            with open(readme_path, encoding="utf-8") as f:
                 content = f.read()
                 # README should be comprehensive (400+ lines as updated)
                 lines = content.strip().split("\n")

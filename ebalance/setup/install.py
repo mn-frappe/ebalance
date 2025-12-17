@@ -8,7 +8,6 @@ Handles after_install and after_migrate hooks
 """
 
 import frappe
-from frappe import _
 
 
 def after_install():
@@ -25,7 +24,7 @@ def after_install():
     add_to_integrations_workspace()
     import_mof_accounts()
     frappe.db.commit()
-    
+
     print("✅ eBalance app installed successfully!")
     print("   - Configure eBalance Settings to connect to MOF")
     print("   - Sync report periods to begin reporting")
@@ -84,7 +83,7 @@ def setup_permissions():
     # Roles that should have access to eBalance
     manager_roles = ["System Manager", "Accounts Manager"]
     user_roles = ["Accounts User", "Accounts Manager", "System Manager"]
-    
+
     doctypes = {
         "eBalance Settings": {
             "roles": manager_roles,
@@ -103,21 +102,21 @@ def setup_permissions():
             "perms": {"read": 1, "write": 0, "create": 0}
         }
     }
-    
+
     for doctype, config in doctypes.items():
         if not frappe.db.exists("DocType", doctype):
             continue
-        
+
         for role in config["roles"]:
             if not frappe.db.exists("Role", role):
                 continue
-            
+
             # Check if permission already exists
             existing = frappe.db.exists("Custom DocPerm", {
                 "parent": doctype,
                 "role": role
             })
-            
+
             if not existing:
                 try:
                     frappe.get_doc({
@@ -130,7 +129,7 @@ def setup_permissions():
                     }).insert(ignore_permissions=True)
                 except Exception:
                     pass  # Permission might already exist
-    
+
     print("✅ Set up eBalance permissions")
 
 
@@ -172,14 +171,14 @@ def create_custom_fields():
             }
         ]
     }
-    
+
     for doctype, fields in custom_fields.items():
         if not frappe.db.exists("DocType", doctype):
             continue
-        
+
         for field in fields:
             field_name = f"{doctype}-{field['fieldname']}"
-            
+
             if not frappe.db.exists("Custom Field", field_name):
                 try:
                     cf = frappe.get_doc({
@@ -191,7 +190,7 @@ def create_custom_fields():
                     cf.insert(ignore_permissions=True)
                 except Exception as e:
                     print(f"Warning: Could not create custom field {field_name}: {e}")
-    
+
     print("✅ Created eBalance custom fields")
 
 
@@ -202,13 +201,13 @@ def cleanup_custom_fields():
         filters={"module": "eBalance"},
         pluck="name"
     )
-    
+
     for field in custom_fields:
         try:
             frappe.delete_doc("Custom Field", field, ignore_permissions=True)
         except Exception:
             pass
-    
+
     print("✅ Cleaned up eBalance custom fields")
 
 
@@ -227,31 +226,31 @@ def setup_scheduler():
 def add_to_integrations_workspace():
     """
     Add eBalance Settings link to MN Settings section in Integrations workspace.
-    
+
     Creates a "MN Settings" card section if it doesn't exist (for when eBalance
     is installed before QPay/eBarimt), then adds eBalance Settings link.
-    
+
     Properly calculates idx to avoid conflicts with other apps.
     Also updates the content JSON which controls the visual layout.
     """
     import json
-    
+
     if not frappe.db.exists("Workspace", "Integrations"):
         return
-    
+
     try:
         ws = frappe.get_doc("Workspace", "Integrations")
-        
+
         # Get the maximum idx to avoid conflicts
         max_idx = max([link.idx or 0 for link in ws.links] or [0])
-        
+
         # Check if MN Settings card already exists and get its position
         mn_card_idx = None
         for link in ws.links:
             if link.label == "MN Settings" and link.type == "Card Break":
                 mn_card_idx = link.idx
                 break
-        
+
         if mn_card_idx is None:
             # Add MN Settings card break at the end
             max_idx += 1
@@ -268,13 +267,13 @@ def add_to_integrations_workspace():
                 },
             )
             mn_card_idx = max_idx
-        
+
         # Check if eBalance Settings link already exists
         ebalance_link_exists = any(
             link.link_to == "eBalance Settings" and link.type == "Link"
             for link in ws.links
         )
-        
+
         if not ebalance_link_exists:
             # Add eBalance Settings link right after MN Settings card
             max_idx = max([link.idx or 0 for link in ws.links] or [0]) + 1
@@ -293,7 +292,7 @@ def add_to_integrations_workspace():
                     "idx": max_idx,
                 },
             )
-        
+
         # Update content JSON to include MN Settings card (controls visual layout)
         if ws.content:
             content = json.loads(ws.content)
@@ -310,13 +309,13 @@ def add_to_integrations_workspace():
                     "data": {"card_name": "MN Settings", "col": 4},
                 })
                 ws.content = json.dumps(content)
-        
+
         ws.save(ignore_permissions=True)
         frappe.db.commit()
-        
+
         # Clear bootinfo cache so changes appear without hard refresh
         frappe.cache.delete_key("bootinfo")
-        
+
         print("  ✓ Added eBalance Settings to Integrations workspace (MN Settings section)")
     except Exception as e:
         print(f"  ⚠ Could not add to Integrations workspace: {e}")
@@ -328,29 +327,29 @@ def remove_from_integrations_workspace():
     """
     if not frappe.db.exists("Workspace", "Integrations"):
         return
-    
+
     try:
         ws = frappe.get_doc("Workspace", "Integrations")
-        
+
         # Remove eBalance Settings link
         ws.links = [
             link for link in ws.links
             if not (link.link_to == "eBalance Settings" and link.type == "Link")
         ]
-        
+
         # Check if there are any MN Settings links left (QPay, eBarimt)
         mn_links = [
             link for link in ws.links
             if link.type == "Link" and link.link_to in ["QPay Settings", "eBarimt Settings"]
         ]
-        
+
         # If no MN links left, remove the MN Settings card break
         if not mn_links:
             ws.links = [
                 link for link in ws.links
                 if not (link.label == "MN Settings" and link.type == "Card Break")
             ]
-        
+
         ws.save(ignore_permissions=True)
         print("  ✓ Removed eBalance Settings from Integrations workspace")
     except Exception as e:
@@ -367,16 +366,16 @@ def import_mof_accounts():
         if not frappe.db.exists("DocType", "MOF Account Mapping"):
             print("  ⚠ MOF Account Mapping DocType not found - skipping import")
             return
-        
+
         from ebalance.fixtures.mof_accounts import import_mof_accounts as do_import
         result = do_import()
-        
+
         if result["imported"] > 0:
             print(f"  ✓ Imported {result['imported']} MOF standard accounts")
         if result["skipped"] > 0:
             print(f"  ℹ Skipped {result['skipped']} existing accounts")
         if result["errors"]:
             print(f"  ⚠ {len(result['errors'])} errors during import")
-            
+
     except Exception as e:
         print(f"  ⚠ Could not import MOF accounts: {e}")

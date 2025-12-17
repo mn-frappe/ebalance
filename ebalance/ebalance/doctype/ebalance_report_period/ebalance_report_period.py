@@ -8,17 +8,17 @@ from frappe.model.document import Document
 
 class eBalanceReportPeriod(Document):
 	"""eBalance Report Period - Synced from eBalance API"""
-	
+
 	def validate(self):
 		self._parse_period_code()
-	
+
 	def _parse_period_code(self):
 		"""Parse period code to extract type and year"""
 		if not self.period_code:
 			return
-		
+
 		code = self.period_code
-		
+
 		# Parse period type from code
 		# Examples: End_2024_H_2, SubEnd_2024_M_1, Open_2025_M_2, Summary_2024_H_2
 		if code.startswith("End_"):
@@ -29,7 +29,7 @@ class eBalanceReportPeriod(Document):
 			self.period_type = "Opening"
 		elif code.startswith("Summary"):
 			self.period_type = "Summary"
-		
+
 		# Try to extract year
 		parts = code.split("_")
 		for part in parts:

@@ -11,7 +11,7 @@ based on mn_chart.csv for automatic import during eBalance installation.
 
 Account Structure:
 - 1xxx: Assets (Хөрөнгө) - 55 accounts
-- 2xxx: Liabilities (Өр төлбөр) - 29 accounts  
+- 2xxx: Liabilities (Өр төлбөр) - 29 accounts
 - 3xxx: Equity (Өмч) - 12 accounts
 - 4xxx: Revenue (Орлого) - 15 accounts
 - 5xxx: Cost of Sales (Борлуулалтын өртөг) - 5 accounts
@@ -23,7 +23,6 @@ Account Structure:
 
 import frappe
 from frappe import _
-
 
 # Complete Mongolian Standard Chart of Accounts (154 accounts)
 MOF_ACCOUNTS = [
@@ -85,7 +84,7 @@ MOF_ACCOUNTS = [
 	{"mof_account_number": "1970", "mof_account_name": "Biological assets - non-current", "mof_account_name_mn": "Биологийн хөрөнгө - урт хугацаат", "parent_mof_account": "1000", "is_group": 0, "root_type": "Asset"},
 	{"mof_account_number": "1980", "mof_account_name": "Deferred tax asset", "mof_account_name_mn": "Хойшлогдсон татварын хөрөнгө", "parent_mof_account": "1000", "is_group": 0, "root_type": "Asset"},
 	{"mof_account_number": "1990", "mof_account_name": "Other non-current assets", "mof_account_name_mn": "Бусад эргэлтийн бус хөрөнгө", "parent_mof_account": "1000", "is_group": 0, "root_type": "Asset"},
-	
+
 	# ============================================
 	# 2xxx - LIABILITIES (ӨР ТӨЛБӨР)
 	# ============================================
@@ -118,7 +117,7 @@ MOF_ACCOUNTS = [
 	{"mof_account_number": "2450", "mof_account_name": "Deferred tax liability", "mof_account_name_mn": "Хойшлогдсон татварын өр төлбөр", "parent_mof_account": "2400", "is_group": 0, "root_type": "Liability"},
 	{"mof_account_number": "2460", "mof_account_name": "Asset retirement / decommissioning obligation", "mof_account_name_mn": "Үндсэн хөрөнгө буулгалтын нөөц, нөхөн сэргээлтийн үүрэг", "parent_mof_account": "2400", "is_group": 0, "root_type": "Liability"},
 	{"mof_account_number": "2490", "mof_account_name": "Other non-current liabilities", "mof_account_name_mn": "Бусад урт хугацаат өр төлбөр", "parent_mof_account": "2400", "is_group": 0, "root_type": "Liability"},
-	
+
 	# ============================================
 	# 3xxx - EQUITY (ӨМЧ)
 	# ============================================
@@ -134,7 +133,7 @@ MOF_ACCOUNTS = [
 	{"mof_account_number": "3420", "mof_account_name": "Other reserves", "mof_account_name_mn": "Бусад нөөцийн сан", "parent_mof_account": "3400", "is_group": 0, "root_type": "Equity"},
 	{"mof_account_number": "3500", "mof_account_name": "Treasury shares", "mof_account_name_mn": "Дахин худалдаж авсан хувьцаа", "parent_mof_account": "3000", "is_group": 0, "root_type": "Equity"},
 	{"mof_account_number": "3600", "mof_account_name": "Non-controlling interest", "mof_account_name_mn": "Хяналтын бус сонирхол", "parent_mof_account": "3000", "is_group": 0, "root_type": "Equity"},
-	
+
 	# ============================================
 	# 4xxx - REVENUE / INCOME (ОРЛОГО)
 	# ============================================
@@ -153,7 +152,7 @@ MOF_ACCOUNTS = [
 	{"mof_account_number": "4320", "mof_account_name": "Foreign exchange gain", "mof_account_name_mn": "Валютын ханшийн зөрүүгийн ашиг", "parent_mof_account": "4300", "is_group": 0, "root_type": "Income"},
 	{"mof_account_number": "4330", "mof_account_name": "Gain from fair value remeasurement", "mof_account_name_mn": "Хөрөнгийн үнэлгээний олз", "parent_mof_account": "4300", "is_group": 0, "root_type": "Income"},
 	{"mof_account_number": "4400", "mof_account_name": "Other non-operating income", "mof_account_name_mn": "Бусад үйл ажиллагааны бус орлого", "parent_mof_account": "4000", "is_group": 0, "root_type": "Income"},
-	
+
 	# ============================================
 	# 5xxx - COST OF SALES (БОРЛУУЛАЛТЫН ӨРТӨГ)
 	# ============================================
@@ -162,7 +161,7 @@ MOF_ACCOUNTS = [
 	{"mof_account_number": "5110", "mof_account_name": "Cost of goods sold - other goods", "mof_account_name_mn": "Борлуулсан бусад барааны өртөг", "parent_mof_account": "5000", "is_group": 0, "root_type": "Expense"},
 	{"mof_account_number": "5120", "mof_account_name": "Cost of services rendered", "mof_account_name_mn": "Үйлчилгээ үзүүлэхэд гарсан өртөг", "parent_mof_account": "5000", "is_group": 0, "root_type": "Expense"},
 	{"mof_account_number": "5130", "mof_account_name": "Cost of goods for resale", "mof_account_name_mn": "Дахин борлуулах барааны өртөг", "parent_mof_account": "5000", "is_group": 0, "root_type": "Expense"},
-	
+
 	# ============================================
 	# 6xxx - OPERATING EXPENSES (ҮЙЛ АЖИЛЛАГААНЫ ЗАРДАЛ)
 	# ============================================
@@ -188,7 +187,7 @@ MOF_ACCOUNTS = [
 	{"mof_account_number": "6600", "mof_account_name": "Bad debt expense", "mof_account_name_mn": "Авлагын хугацаа хэтэрсний алдагдал", "parent_mof_account": "6000", "is_group": 0, "root_type": "Expense"},
 	{"mof_account_number": "6700", "mof_account_name": "Inventory write-down / impairment expense", "mof_account_name_mn": "Бараа материалын үнэ цэнийн бууралтын зардал", "parent_mof_account": "6000", "is_group": 0, "root_type": "Expense"},
 	{"mof_account_number": "6800", "mof_account_name": "Impairment of assets", "mof_account_name_mn": "Хөрөнгийн үнэ цэнийн бууралтын зардал", "parent_mof_account": "6000", "is_group": 0, "root_type": "Expense"},
-	
+
 	# ============================================
 	# 7xxx - FINANCE COSTS (САНХҮҮГИЙН ЗАРДАЛ)
 	# ============================================
@@ -196,7 +195,7 @@ MOF_ACCOUNTS = [
 	{"mof_account_number": "7100", "mof_account_name": "Interest expense", "mof_account_name_mn": "Хүүгийн зардал", "parent_mof_account": "7000", "is_group": 0, "root_type": "Expense"},
 	{"mof_account_number": "7200", "mof_account_name": "Foreign exchange loss", "mof_account_name_mn": "Валютын ханшийн зөрүүгийн алдагдал", "parent_mof_account": "7000", "is_group": 0, "root_type": "Expense"},
 	{"mof_account_number": "7300", "mof_account_name": "Bank fees and commissions", "mof_account_name_mn": "Банкны шимтгэл, хураамж", "parent_mof_account": "7000", "is_group": 0, "root_type": "Expense"},
-	
+
 	# ============================================
 	# 8xxx - OTHER NON-OPERATING EXPENSES (БУСАД ЗАРДАЛ)
 	# ============================================
@@ -204,7 +203,7 @@ MOF_ACCOUNTS = [
 	{"mof_account_number": "8100", "mof_account_name": "Loss on disposal of PPE", "mof_account_name_mn": "Үндсэн хөрөнгө борлуулалтын алдагдал", "parent_mof_account": "8000", "is_group": 0, "root_type": "Expense"},
 	{"mof_account_number": "8200", "mof_account_name": "Fines and penalties expense", "mof_account_name_mn": "Торгууль, алдангийн зардал", "parent_mof_account": "8000", "is_group": 0, "root_type": "Expense"},
 	{"mof_account_number": "8300", "mof_account_name": "Charity and sponsorship", "mof_account_name_mn": "Буцалтгүй тусламж, ивээн тэтгэх зардал", "parent_mof_account": "8000", "is_group": 0, "root_type": "Expense"},
-	
+
 	# ============================================
 	# 9xxx - TAX & OFF-BALANCE (ТАТВАР, ТЭНЦЛИЙН ГАДНАХ)
 	# ============================================
@@ -222,20 +221,20 @@ MOF_ACCOUNTS = [
 def import_mof_accounts():
 	"""
 	Import all 154 MOF standard accounts into MOF Account Mapping.
-	
+
 	Called during eBalance app installation.
 	"""
 	imported = 0
 	skipped = 0
 	errors = []
-	
+
 	for account in MOF_ACCOUNTS:
 		try:
 			# Check if already exists
 			if frappe.db.exists("MOF Account Mapping", account["mof_account_number"]):
 				skipped += 1
 				continue
-			
+
 			doc = frappe.new_doc("MOF Account Mapping")
 			doc.mof_account_number = account["mof_account_number"]
 			doc.mof_account_name = account["mof_account_name"]
@@ -245,15 +244,15 @@ def import_mof_accounts():
 			doc.root_type = account["root_type"]
 			doc.enabled = 1
 			doc.auto_mapped = 0
-			
+
 			doc.insert(ignore_permissions=True)
 			imported += 1
-			
+
 		except Exception as e:
-			errors.append(f"{account['mof_account_number']}: {str(e)}")
-	
+			errors.append(f"{account['mof_account_number']}: {e!s}")
+
 	frappe.db.commit()
-	
+
 	return {
 		"imported": imported,
 		"skipped": skipped,
@@ -269,7 +268,7 @@ def setup_mof_accounts():
 	Can be called from eBalance Settings page.
 	"""
 	result = import_mof_accounts()
-	
+
 	if result["errors"]:
 		frappe.msgprint(
 			_("Imported {0} MOF accounts. Skipped {1} existing. Errors: {2}").format(
@@ -286,7 +285,7 @@ def setup_mof_accounts():
 			indicator="green",
 			title=_("Import Successful")
 		)
-	
+
 	return result
 
 
@@ -299,16 +298,16 @@ def get_mof_account_stats():
 		FROM `tabMOF Account Mapping Item`
 	""", as_dict=True)
 	mapped = result[0].get("cnt", 0) if result else 0
-	
+
 	by_root_type = frappe.db.sql("""
 		SELECT root_type, COUNT(*) as count
 		FROM `tabMOF Account Mapping`
 		GROUP BY root_type
 	""", as_dict=True)
-	
+
 	groups = frappe.db.count("MOF Account Mapping", {"is_group": 1})
 	leaves = frappe.db.count("MOF Account Mapping", {"is_group": 0})
-	
+
 	return {
 		"total": total,
 		"mapped": mapped,

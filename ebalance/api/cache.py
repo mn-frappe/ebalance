@@ -20,12 +20,11 @@ Cache Strategy:
 """
 
 import json
-import frappe
-from frappe.utils import cint, flt
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Optional, Callable
-from datetime import timedelta
+from typing import Any
 
+import frappe
 
 # Cache key prefixes
 CACHE_PREFIX = "ebalance:"
@@ -68,7 +67,7 @@ def cache_key(prefix: str, *args) -> str:
 	return prefix
 
 
-def cache_get(key: str) -> Optional[Any]:
+def cache_get(key: str) -> Any | None:
 	"""Get value from cache"""
 	try:
 		value = get_cache().get_value(key)
@@ -118,15 +117,15 @@ def cache_delete_pattern(pattern: str) -> int:
 	return count
 
 
-def cached(key_prefix: str, ttl: int = 300, key_func: Callable = None):
+def cached(key_prefix: str, ttl: int = 300, key_func: Callable | None = None):
 	"""
 	Decorator to cache function results.
-	
+
 	Args:
 		key_prefix: Cache key prefix
 		ttl: Time to live in seconds
 		key_func: Function to generate cache key from args
-	
+
 	Usage:
 		@cached("mof_balance", ttl=300, key_func=lambda c,d1,d2,m: f"{c}:{d1}:{d2}:{m}")
 		def get_mof_balance(company, from_date, to_date, mof_code):
@@ -140,21 +139,21 @@ def cached(key_prefix: str, ttl: int = 300, key_func: Callable = None):
 				key_suffix = key_func(*args, **kwargs)
 			else:
 				key_suffix = ":".join(str(a) for a in args)
-			
+
 			full_key = cache_key(key_prefix, key_suffix)
-			
+
 			# Try cache first
 			cached_value = cache_get(full_key)
 			if cached_value is not None:
 				return cached_value
-			
+
 			# Call function
 			result = func(*args, **kwargs)
-			
+
 			# Store in cache
 			if result is not None:
 				cache_set(full_key, result, ttl)
-			
+
 			return result
 		return wrapper
 	return decorator
@@ -167,7 +166,7 @@ def cached(key_prefix: str, ttl: int = 300, key_func: Callable = None):
 def get_all_mof_accounts(force_refresh: bool = False) -> list:
 	"""
 	Get all MOF accounts from cache or database.
-	
+
 	Returns:
 		list: List of MOF account dicts
 	"""
@@ -175,7 +174,7 @@ def get_all_mof_accounts(force_refresh: bool = False) -> list:
 		cached = cache_get(CACHE_KEYS["mof_accounts"])
 		if cached:
 			return cached
-	
+
 	# Fetch from database with single query
 	accounts = frappe.get_all(
 		"MOF Account Mapping",
@@ -187,36 +186,36 @@ def get_all_mof_accounts(force_refresh: bool = False) -> list:
 		],
 		order_by="mof_account_number"
 	)
-	
+
 	# Cache result
 	cache_set(CACHE_KEYS["mof_accounts"], accounts, CACHE_TTL["mof_accounts"])
-	
+
 	return accounts
 
 
-def get_mof_account(mof_code: str, force_refresh: bool = False) -> Optional[dict]:
+def get_mof_account(mof_code: str, force_refresh: bool = False) -> dict | None:
 	"""
 	Get single MOF account with linked ERPNext accounts.
-	
+
 	Args:
 		mof_code: MOF account number
-		
+
 	Returns:
 		dict: MOF account with accounts list
 	"""
 	key = cache_key(CACHE_KEYS["mof_account"], mof_code)
-	
+
 	if not force_refresh:
 		cached = cache_get(key)
 		if cached:
 			return cached
-	
+
 	# Get MOF account
 	if not frappe.db.exists("MOF Account Mapping", mof_code):
 		return None
-	
+
 	doc = frappe.get_doc("MOF Account Mapping", mof_code)
-	
+
 	result = {
 		"mof_code": doc.mof_account_number,
 		"name_en": doc.mof_account_name,
@@ -225,16 +224,16 @@ def get_mof_account(mof_code: str, force_refresh: bool = False) -> Optional[dict
 		"root_type": doc.root_type,
 		"accounts": [row.account for row in doc.accounts] if hasattr(doc, "accounts") else []
 	}
-	
+
 	cache_set(key, result, CACHE_TTL["mof_account"])
-	
+
 	return result
 
 
 def get_mof_mapping_lookup(force_refresh: bool = False) -> dict:
 	"""
 	Get ERPNext account -> MOF code lookup dictionary.
-	
+
 	Returns:
 		dict: {account_name: mof_code}
 	"""
@@ -242,20 +241,20 @@ def get_mof_mapping_lookup(force_refresh: bool = False) -> dict:
 		cached = cache_get(CACHE_KEYS["mof_mapping_lookup"])
 		if cached:
 			return cached
-	
+
 	# Build lookup with single query on child table
 	lookup = {}
-	
+
 	items = frappe.get_all(
 		"MOF Account Mapping Item",
 		fields=["parent", "account"],
 	)
-	
+
 	for item in items:
 		lookup[item.account] = item.parent
-	
+
 	cache_set(CACHE_KEYS["mof_mapping_lookup"], lookup, CACHE_TTL["mof_mapping_lookup"])
-	
+
 	return lookup
 
 
@@ -267,23 +266,23 @@ def invalidate_mof_cache():
 
 
 # =============================================================================
-# GL Balance Cache Functions  
+# GL Balance Cache Functions
 # =============================================================================
 
-def get_cached_gl_totals(company: str, from_date: str, to_date: str, force_refresh: bool = False) -> Optional[dict]:
+def get_cached_gl_totals(company: str, from_date: str, to_date: str, force_refresh: bool = False) -> dict | None:
 	"""
 	Get cached GL totals for a date range.
-	
+
 	Returns:
 		dict: {account_name: {"debit": x, "credit": y}}
 	"""
 	key = cache_key(CACHE_KEYS["gl_totals"], company, str(from_date), str(to_date))
-	
+
 	if not force_refresh:
 		cached = cache_get(key)
 		if cached:
 			return cached
-	
+
 	return None
 
 
@@ -293,7 +292,7 @@ def set_cached_gl_totals(company: str, from_date: str, to_date: str, totals: dic
 	cache_set(key, totals, CACHE_TTL["gl_totals"])
 
 
-def invalidate_balance_cache(company: str = None):
+def invalidate_balance_cache(company: str | None = None):
 	"""Invalidate balance caches, optionally for specific company"""
 	if company:
 		cache_delete_pattern(f"{CACHE_KEYS['balance']}{company}")
@@ -307,7 +306,7 @@ def invalidate_balance_cache(company: str = None):
 # Token Cache Functions
 # =============================================================================
 
-def get_cached_token() -> Optional[dict]:
+def get_cached_token() -> dict | None:
 	"""Get cached token with expiry"""
 	return cache_get(CACHE_KEYS["token"])
 
@@ -329,7 +328,7 @@ def invalidate_token_cache():
 # Period Cache Functions
 # =============================================================================
 
-def get_cached_periods(environment: str = "Staging") -> Optional[list]:
+def get_cached_periods(environment: str = "Staging") -> list | None:
 	"""Get cached report periods"""
 	key = cache_key(CACHE_KEYS["periods"], environment)
 	return cache_get(key)
@@ -345,14 +344,14 @@ def set_cached_periods(environment: str, periods: list):
 # Account List Cache
 # =============================================================================
 
-def get_cached_accounts(company: str, filters: dict = None) -> Optional[list]:
+def get_cached_accounts(company: str, filters: dict | None = None) -> list | None:
 	"""Get cached account list for company"""
 	filter_hash = hash(json.dumps(filters, sort_keys=True, default=str)) if filters else ""
 	key = cache_key(CACHE_KEYS["account_list"], company, filter_hash)
 	return cache_get(key)
 
 
-def set_cached_accounts(company: str, accounts: list, filters: dict = None):
+def set_cached_accounts(company: str, accounts: list, filters: dict | None = None):
 	"""Cache account list"""
 	filter_hash = hash(json.dumps(filters, sort_keys=True, default=str)) if filters else ""
 	key = cache_key(CACHE_KEYS["account_list"], company, filter_hash)

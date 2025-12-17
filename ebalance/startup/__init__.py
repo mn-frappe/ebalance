@@ -4,13 +4,13 @@
 from ebalance.startup.boot import (
     boot_session,
     get_ebalance_boot_data,
+    get_help_links,
     get_notification_config,
-    get_help_links
 )
 
 __all__ = [
     "boot_session",
     "get_ebalance_boot_data",
-    "get_notification_config",
-    "get_help_links"
+    "get_help_links",
+    "get_notification_config"
 ]

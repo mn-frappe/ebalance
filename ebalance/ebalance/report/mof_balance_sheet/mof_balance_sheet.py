@@ -15,29 +15,29 @@ required for eBalance submission.
 
 import frappe
 from frappe import _
-from frappe.utils import flt, getdate
+from frappe.utils import flt
 
 
 def execute(filters=None):
 	"""
 	Execute MOF Balance Sheet report.
-	
+
 	Args:
 		filters: Dict with company, from_date, to_date, fiscal_year
-		
+
 	Returns:
 		tuple: (columns, data, message, chart, report_summary)
 	"""
 	filters = frappe._dict(filters or {})
-	
+
 	if not filters.company:
 		frappe.throw(_("Company is required"))
-	
+
 	columns = get_columns()
 	data = get_data(filters)
 	summary = get_report_summary(data)
 	chart = get_chart_data(data)
-	
+
 	return columns, data, None, chart, summary
 
 
@@ -81,17 +81,17 @@ def get_columns():
 def get_data(filters):
 	"""Generate Balance Sheet data from MOF Account Mappings"""
 	data = []
-	
+
 	# Get date range
 	from_date = filters.get("from_date")
 	to_date = filters.get("to_date")
 	company = filters.company
-	
+
 	if filters.fiscal_year and not (from_date and to_date):
 		fy = frappe.get_doc("Fiscal Year", filters.fiscal_year)
 		from_date = fy.year_start_date
 		to_date = fy.year_end_date
-	
+
 	# Balance Sheet structure
 	bs_structure = [
 		# Assets (Хөрөнгө)
@@ -107,7 +107,7 @@ def get_data(filters):
 		{"row_code": "СБТ.1.2.2", "account_name_mn": "Хуримтлагдсан элэгдэл", "account_name": "Accumulated depreciation", "indent": 2, "mof_codes": ["1820", "1821", "1822", "1829"]},
 		{"row_code": "СБТ.1.2.3", "account_name_mn": "Биет бус хөрөнгө", "account_name": "Intangible assets", "indent": 2, "mof_codes": ["1900", "1901", "1902", "1903", "1910"]},
 		{"row_code": "СБТ.1.2.4", "account_name_mn": "Бусад эргэлтийн бус хөрөнгө", "account_name": "Other non-current assets", "indent": 2, "mof_codes": ["1950", "1951", "1952", "1960", "1970", "1980", "1990"]},
-		
+
 		# Liabilities (Өр төлбөр)
 		{"row_code": "СБТ.2", "account_name_mn": "НИЙТ ӨР ТӨЛБӨР", "account_name": "TOTAL LIABILITIES", "is_total": True, "indent": 0},
 		{"row_code": "СБТ.2.1", "account_name_mn": "Богино хугацаат өр төлбөр", "account_name": "Current Liabilities", "is_total": True, "indent": 1, "mof_range": ["21", "22", "23"]},
@@ -119,7 +119,7 @@ def get_data(filters):
 		{"row_code": "СБТ.2.2", "account_name_mn": "Урт хугацаат өр төлбөр", "account_name": "Non-current Liabilities", "is_total": True, "indent": 1, "mof_range": ["24"]},
 		{"row_code": "СБТ.2.2.1", "account_name_mn": "Урт хугацаат зээл", "account_name": "Long-term loans", "indent": 2, "mof_codes": ["2400", "2410", "2420", "2430", "2440"]},
 		{"row_code": "СБТ.2.2.2", "account_name_mn": "Бусад урт хугацаат өр", "account_name": "Other non-current liabilities", "indent": 2, "mof_codes": ["2450", "2460", "2490"]},
-		
+
 		# Equity (Өмч)
 		{"row_code": "СБТ.3", "account_name_mn": "НИЙТ ӨМЧ", "account_name": "TOTAL EQUITY", "is_total": True, "indent": 0},
 		{"row_code": "СБТ.3.1", "account_name_mn": "Хувь нийлүүлсэн хөрөнгө", "account_name": "Share capital", "indent": 1, "mof_codes": ["3100", "3110", "3120"]},
@@ -128,28 +128,28 @@ def get_data(filters):
 		{"row_code": "СБТ.3.4", "account_name_mn": "Нөөцийн сан", "account_name": "Reserves", "indent": 1, "mof_codes": ["3400", "3410", "3420"]},
 		{"row_code": "СБТ.3.5", "account_name_mn": "Дахин худалдаж авсан хувьцаа", "account_name": "Treasury shares", "indent": 1, "mof_codes": ["3500", "3600"]},
 	]
-	
+
 	# Calculate balances
 	balances = {}
-	
+
 	for row in bs_structure:
 		if row.get("mof_codes"):
 			balance = get_mof_account_balance(
 				company, from_date, to_date, row["mof_codes"]
 			)
 			balances[row["row_code"]] = balance
-	
+
 	# Calculate totals
 	balances["СБТ.1.1"] = sum(balances.get(f"СБТ.1.1.{i}", 0) for i in range(1, 6))
 	balances["СБТ.1.2"] = sum(balances.get(f"СБТ.1.2.{i}", 0) for i in range(1, 5))
 	balances["СБТ.1"] = balances.get("СБТ.1.1", 0) + balances.get("СБТ.1.2", 0)
-	
+
 	balances["СБТ.2.1"] = sum(balances.get(f"СБТ.2.1.{i}", 0) for i in range(1, 6))
 	balances["СБТ.2.2"] = sum(balances.get(f"СБТ.2.2.{i}", 0) for i in range(1, 3))
 	balances["СБТ.2"] = balances.get("СБТ.2.1", 0) + balances.get("СБТ.2.2", 0)
-	
+
 	balances["СБТ.3"] = sum(balances.get(f"СБТ.3.{i}", 0) for i in range(1, 6))
-	
+
 	# Build report data
 	for row in bs_structure:
 		data.append({
@@ -160,7 +160,7 @@ def get_data(filters):
 			"indent": row.get("indent", 0),
 			"is_total": row.get("is_total", False)
 		})
-	
+
 	# Add balance check row
 	balance_check = balances.get("СБТ.1", 0) - (balances.get("СБТ.2", 0) + balances.get("СБТ.3", 0))
 	data.append({
@@ -171,31 +171,31 @@ def get_data(filters):
 		"indent": 0,
 		"is_total": True
 	})
-	
+
 	return data
 
 
 def get_mof_account_balance(company, from_date, to_date, mof_codes):
 	"""
 	Get balance from MOF Account Mappings.
-	
+
 	Args:
 		company: Company name
 		from_date: Start date
 		to_date: End date
 		mof_codes: List of MOF account codes
-		
+
 	Returns:
 		float: Total balance
 	"""
 	total = 0.0
-	
+
 	for mof_code in mof_codes:
 		if frappe.db.exists("MOF Account Mapping", mof_code):
 			doc = frappe.get_doc("MOF Account Mapping", mof_code)
 			balance = doc.get_balance(company, from_date, to_date)
 			total += balance
-	
+
 	return total
 
 
@@ -204,7 +204,7 @@ def get_report_summary(data):
 	total_assets = 0
 	total_liabilities = 0
 	total_equity = 0
-	
+
 	for row in data:
 		if row.get("row_code") == "СБТ.1":
 			total_assets = row.get("balance", 0)
@@ -212,7 +212,7 @@ def get_report_summary(data):
 			total_liabilities = row.get("balance", 0)
 		elif row.get("row_code") == "СБТ.3":
 			total_equity = row.get("balance", 0)
-	
+
 	return [
 		{
 			"value": total_assets,
@@ -240,7 +240,7 @@ def get_chart_data(data):
 	total_assets = 0
 	total_liabilities = 0
 	total_equity = 0
-	
+
 	for row in data:
 		if row.get("row_code") == "СБТ.1":
 			total_assets = row.get("balance", 0)
@@ -248,7 +248,7 @@ def get_chart_data(data):
 			total_liabilities = row.get("balance", 0)
 		elif row.get("row_code") == "СБТ.3":
 			total_equity = row.get("balance", 0)
-	
+
 	return {
 		"data": {
 			"labels": [_("Assets"), _("Liabilities"), _("Equity")],

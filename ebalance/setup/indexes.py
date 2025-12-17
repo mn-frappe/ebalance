@@ -15,7 +15,6 @@ Usage:
 
 import frappe
 
-
 # Index definitions: (table, column(s), index_name, unique)
 INDEXES = [
 	# MOF Account Mapping - fast lookups by account number
@@ -23,21 +22,21 @@ INDEXES = [
 	("tabMOF Account Mapping", "enabled", "idx_mof_enabled", False),
 	("tabMOF Account Mapping", "is_group", "idx_mof_is_group", False),
 	("tabMOF Account Mapping", "root_type", "idx_mof_root_type", False),
-	
+
 	# MOF Account Mapping Item - fast account->mof lookup
 	("tabMOF Account Mapping Item", "account", "idx_mof_item_account", False),
 	("tabMOF Account Mapping Item", "parent", "idx_mof_item_parent", False),
-	
+
 	# eBalance Report Request - fast status queries
 	("tabeBalance Report Request", "status", "idx_ebalance_req_status", False),
 	("tabeBalance Report Request", "company", "idx_ebalance_req_company", False),
 	("tabeBalance Report Request", "fiscal_year", "idx_ebalance_req_fy", False),
-	
+
 	# eBalance Submission Log - audit queries
 	("tabeBalance Submission Log", "report_request", "idx_submission_req", False),
 	("tabeBalance Submission Log", "status", "idx_submission_status", False),
 	("tabeBalance Submission Log", "creation", "idx_submission_creation", False),
-	
+
 	# eBalance Report Period - period lookups
 	("tabeBalance Report Period", "period_code", "idx_period_code", True),
 	("tabeBalance Report Period", "environment", "idx_period_env", False),
@@ -48,10 +47,10 @@ COMPOSITE_INDEXES = [
 	# GL Entry queries by company + date range + account
 	("tabGL Entry", ["company", "posting_date", "is_cancelled"], "idx_gl_company_date_cancel"),
 	("tabGL Entry", ["account", "posting_date", "is_cancelled"], "idx_gl_account_date_cancel"),
-	
+
 	# Account queries by company + root_type
 	("tabAccount", ["company", "root_type", "is_group"], "idx_account_company_root"),
-	
+
 	# MOF Mapping fast filter
 	("tabMOF Account Mapping", ["enabled", "is_group", "mof_account_number"], "idx_mof_filter"),
 ]
@@ -62,7 +61,7 @@ def create_indexes():
 	created = 0
 	skipped = 0
 	errors = []
-	
+
 	# Simple indexes
 	for table, column, index_name, unique in INDEXES:
 		try:
@@ -72,8 +71,8 @@ def create_indexes():
 			else:
 				skipped += 1
 		except Exception as e:
-			errors.append(f"{table}.{index_name}: {str(e)}")
-	
+			errors.append(f"{table}.{index_name}: {e!s}")
+
 	# Composite indexes
 	for table, columns, index_name in COMPOSITE_INDEXES:
 		try:
@@ -83,20 +82,20 @@ def create_indexes():
 			else:
 				skipped += 1
 		except Exception as e:
-			errors.append(f"{table}.{index_name}: {str(e)}")
-	
+			errors.append(f"{table}.{index_name}: {e!s}")
+
 	result = {
 		"created": created,
 		"skipped": skipped,
 		"errors": errors
 	}
-	
+
 	print(f"✅ Created {created} indexes, skipped {skipped} existing")
 	if errors:
 		print(f"⚠️ Errors: {len(errors)}")
 		for e in errors:
 			print(f"  - {e}")
-	
+
 	return result
 
 
@@ -142,21 +141,21 @@ def drop_index(table: str, index_name: str):
 def drop_all_indexes():
 	"""Drop all eBalance indexes (for cleanup)"""
 	dropped = 0
-	
+
 	for table, _, index_name, _ in INDEXES:
 		try:
 			drop_index(table, index_name)
 			dropped += 1
 		except Exception:
 			pass
-	
+
 	for table, _, index_name in COMPOSITE_INDEXES:
 		try:
 			drop_index(table, index_name)
 			dropped += 1
 		except Exception:
 			pass
-	
+
 	print(f"✅ Dropped {dropped} indexes")
 	return dropped
 
@@ -172,13 +171,13 @@ def analyze_tables():
 		"tabGL Entry",
 		"tabAccount"
 	]
-	
+
 	for table in tables:
 		try:
 			frappe.db.sql(f"ANALYZE TABLE `{table}`")
 		except Exception:
 			pass
-	
+
 	frappe.db.commit()
 	print(f"✅ Analyzed {len(tables)} tables")
 
@@ -187,12 +186,12 @@ def analyze_tables():
 def setup_performance():
 	"""One-click performance setup"""
 	print("Setting up eBalance performance optimizations...")
-	
+
 	# Create indexes
 	create_indexes()
-	
+
 	# Analyze tables
 	analyze_tables()
-	
+
 	print("✅ Performance setup complete")
 	return {"status": "success"}

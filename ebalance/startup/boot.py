@@ -14,20 +14,20 @@ from frappe import _
 def boot_session(bootinfo):
     """
     Add eBalance data to boot session
-    
+
     Args:
         bootinfo: Frappe boot info object
     """
     if frappe.session.user == "Guest":
         return
-    
+
     bootinfo.ebalance = get_ebalance_boot_data()
 
 
 def get_ebalance_boot_data():
     """
     Get eBalance data for browser session
-    
+
     Returns:
         dict: eBalance session data
     """
@@ -38,22 +38,22 @@ def get_ebalance_boot_data():
         "pending_reports": 0,
         "upcoming_deadlines": []
     }
-    
+
     try:
         # Check if user has permission
         if not frappe.has_permission("eBalance Settings", "read"):
             return data
-        
+
         data["has_permission"] = True
-        
+
         # Get settings
         settings = frappe.get_cached_doc("eBalance Settings")
         data["enabled"] = bool(settings.enabled)
         data["environment"] = settings.environment
-        
+
         if not settings.enabled:
             return data
-        
+
         # Get pending reports count
         data["pending_reports"] = frappe.db.count(
             "eBalance Report Request",
@@ -61,10 +61,10 @@ def get_ebalance_boot_data():
                 "status": ["in", ["Draft", "In Progress", "Pending"]]
             }
         )
-        
+
         # Get upcoming deadlines (next 14 days)
-        from frappe.utils import getdate, add_days
-        
+        from frappe.utils import add_days, getdate
+
         upcoming = frappe.db.get_all(
             "eBalance Report Period",
             filters={
@@ -75,19 +75,19 @@ def get_ebalance_boot_data():
             order_by="deadline asc",
             limit=5
         )
-        
+
         data["upcoming_deadlines"] = upcoming
-        
+
     except Exception:
         pass
-    
+
     return data
 
 
 def get_notification_config():
     """
     Get notification configuration for eBalance
-    
+
     Returns:
         dict: Notification config
     """
@@ -106,7 +106,7 @@ def get_notification_config():
 def get_help_links():
     """
     Get help links for eBalance
-    
+
     Returns:
         list: Help link configurations
     """

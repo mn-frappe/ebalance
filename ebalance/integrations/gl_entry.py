@@ -9,24 +9,24 @@ Monitors general ledger changes for reporting
 
 import frappe
 from frappe import _
-from frappe.utils import getdate, flt
+from frappe.utils import flt
 
 
 def on_update(doc, method=None):
     """
     Handle GL Entry update - check for eBalance reporting impact
-    
+
     Args:
         doc: GL Entry document
         method: Event method name
     """
     if not _is_ebalance_enabled():
         return
-    
+
     # Skip if not in a submitted state
     if doc.docstatus != 1:
         return
-    
+
     # Check if this affects an active eBalance period
     _check_period_impact(doc)
 
@@ -34,14 +34,14 @@ def on_update(doc, method=None):
 def on_cancel(doc, method=None):
     """
     Handle GL Entry cancellation
-    
+
     Args:
         doc: GL Entry document
         method: Event method name
     """
     if not _is_ebalance_enabled():
         return
-    
+
     # Check if this affects a submitted eBalance report
     submitted_reports = frappe.db.get_all(
         "eBalance Report Request",
@@ -53,7 +53,7 @@ def on_cancel(doc, method=None):
         },
         fields=["name", "period_name"]
     )
-    
+
     if submitted_reports:
         frappe.log_error(
             message=f"GL Entry {doc.name} cancelled after eBalance submission for periods: {submitted_reports}",
@@ -73,7 +73,7 @@ def _is_ebalance_enabled():
 def _check_period_impact(doc):
     """
     Check if GL Entry impacts an active eBalance period
-    
+
     Args:
         doc: GL Entry document
     """
@@ -88,7 +88,7 @@ def _check_period_impact(doc):
         },
         fields=["name"]
     )
-    
+
     # Update the modification timestamp on affected periods
     for period in active_periods:
         frappe.db.set_value(
@@ -102,13 +102,13 @@ def _check_period_impact(doc):
 def get_gl_summary_for_period(company, from_date, to_date, account=None):
     """
     Get GL summary for eBalance period
-    
+
     Args:
         company: Company name
         from_date: Period start
         to_date: Period end
         account: Specific account (optional)
-        
+
     Returns:
         dict: GL summary
     """
@@ -117,20 +117,20 @@ def get_gl_summary_for_period(company, from_date, to_date, account=None):
         "posting_date": ["between", [from_date, to_date]],
         "is_cancelled": 0
     }
-    
+
     if account:
         filters["account"] = account
-    
+
     # Get aggregated data
     result = frappe.db.sql("""
-        SELECT 
+        SELECT
             account,
             SUM(debit) as total_debit,
             SUM(credit) as total_credit,
             SUM(debit - credit) as balance,
             COUNT(*) as entry_count
         FROM `tabGL Entry`
-        WHERE 
+        WHERE
             company = %(company)s
             AND posting_date BETWEEN %(from_date)s AND %(to_date)s
             AND is_cancelled = 0
@@ -145,7 +145,7 @@ def get_gl_summary_for_period(company, from_date, to_date, account=None):
         "to_date": to_date,
         "account": account
     }, as_dict=True)
-    
+
     return {
         "accounts": result,
         "totals": {
@@ -159,18 +159,18 @@ def get_gl_summary_for_period(company, from_date, to_date, account=None):
 def validate_gl_completeness(company, from_date, to_date):
     """
     Validate GL entries are complete for eBalance submission
-    
+
     Args:
         company: Company name
         from_date: Period start
         to_date: Period end
-        
+
     Returns:
         dict: Validation result
     """
     issues = []
     warnings = []
-    
+
     # Check for unposted documents
     unposted_je = frappe.db.count(
         "Journal Entry",
@@ -184,7 +184,7 @@ def validate_gl_completeness(company, from_date, to_date):
         warnings.append(
             _("{0} draft Journal Entries found").format(unposted_je)
         )
-    
+
     # Check for pending invoices
     pending_si = frappe.db.count(
         "Sales Invoice",
@@ -198,7 +198,7 @@ def validate_gl_completeness(company, from_date, to_date):
         warnings.append(
             _("{0} draft Sales Invoices found").format(pending_si)
         )
-    
+
     pending_pi = frappe.db.count(
         "Purchase Invoice",
         {
@@ -211,11 +211,11 @@ def validate_gl_completeness(company, from_date, to_date):
         warnings.append(
             _("{0} draft Purchase Invoices found").format(pending_pi)
         )
-    
+
     # Verify trial balance is balanced
     summary = get_gl_summary_for_period(company, from_date, to_date)
     totals = summary.get("totals", {})
-    
+
     difference = abs(totals.get("total_debit", 0) - totals.get("total_credit", 0))
     if difference > 0.01:
         issues.append(
@@ -223,7 +223,7 @@ def validate_gl_completeness(company, from_date, to_date):
                 flt(difference, 2)
             )
         )
-    
+
     return {
         "valid": len(issues) == 0,
         "issues": issues,
@@ -236,20 +236,20 @@ def validate_gl_completeness(company, from_date, to_date):
 def get_period_gl_status(company, from_date, to_date):
     """
     Get GL status for eBalance period (API endpoint)
-    
+
     Args:
         company: Company name
         from_date: Period start
         to_date: Period end
-        
+
     Returns:
         dict: GL status
     """
     frappe.has_permission("GL Entry", throw=True)
-    
+
     validation = validate_gl_completeness(company, from_date, to_date)
     summary = get_gl_summary_for_period(company, from_date, to_date)
-    
+
     return {
         "validation": validation,
         "summary": summary,

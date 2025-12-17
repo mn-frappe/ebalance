@@ -17,15 +17,15 @@ For multi-company support, use:
     entity = get_entity_for_company("ABC LLC")
 """
 
+
 import frappe
-from typing import Optional
 
 # Import from local mn_entity module (each app has its own copy)
 from ebalance.mn_entity import (
-    get_entity_for_doc,
-    get_entity_for_company,
-    get_default_company,
     MNEntity,
+    get_default_company,
+    get_entity_for_company,
+    get_entity_for_doc,
 )
 
 __all__ = [
@@ -43,10 +43,10 @@ __all__ = [
 # Legacy functions (for backward compatibility)
 # =============================================================================
 
-def get_ebalance_company_info(settings=None, company: Optional[str] = None, doc=None) -> dict:
+def get_ebalance_company_info(settings=None, company: str | None = None, doc=None) -> dict:
     """
     DEPRECATED: Use get_entity_for_doc() instead.
-    
+
     Get company info for eBalance. Priority:
     1. doc (if provided) - uses doc.company
     2. company (if provided) - uses directly
@@ -54,24 +54,24 @@ def get_ebalance_company_info(settings=None, company: Optional[str] = None, doc=
     """
     if settings is None:
         settings = frappe.get_single("eBalance Settings")
-    
+
     # Determine company
     company_name = None
-    
+
     if doc and hasattr(doc, "company"):
         company_name = doc.company
     elif company:
         company_name = company
     elif settings and hasattr(settings, "company"):
         company_name = settings.company  # type: ignore
-    
+
     result = {
         "org_regno": None,
         "org_id": None,
         "company": None,
         "source": "settings"
     }
-    
+
     # If we have a company, use the new method
     if company_name:
         try:
@@ -84,15 +84,15 @@ def get_ebalance_company_info(settings=None, company: Optional[str] = None, doc=
             }
         except Exception:
             pass
-    
+
     # Fall back to settings fields
     if settings:
         result["org_regno"] = getattr(settings, "org_regno", None)
         result["org_id"] = getattr(settings, "org_id", None)
-    
+
     return result
 
 
-def get_org_regno(settings=None, company: Optional[str] = None, doc=None) -> Optional[str]:
+def get_org_regno(settings=None, company: str | None = None, doc=None) -> str | None:
     """Get organization registry number (PIN)."""
     return get_ebalance_company_info(settings, company, doc).get("org_regno")
