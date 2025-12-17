@@ -38,6 +38,11 @@ after_install = "ebalance.setup.install.after_install"
 after_migrate = "ebalance.setup.install.after_migrate"
 before_uninstall = "ebalance.setup.install.before_uninstall"
 
+# Error Reporting / Telemetry
+# ---------------------------
+# Reports unhandled exceptions to GitHub Issues (if enabled in settings)
+exception_handler = "ebalance.ebalance.telemetry.on_error"
+
 # Fixtures
 fixtures = [
     {
