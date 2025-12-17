@@ -232,7 +232,10 @@ def add_to_integrations_workspace():
     is installed before QPay/eBarimt), then adds eBalance Settings link.
     
     Properly calculates idx to avoid conflicts with other apps.
+    Also updates the content JSON which controls the visual layout.
     """
+    import json
+    
     if not frappe.db.exists("Workspace", "Integrations"):
         return
     
@@ -290,8 +293,27 @@ def add_to_integrations_workspace():
                     "idx": max_idx,
                 },
             )
-            ws.save(ignore_permissions=True)
-            print("  ✓ Added eBalance Settings to Integrations workspace (MN Settings section)")
+        
+        # Update content JSON to include MN Settings card (controls visual layout)
+        if ws.content:
+            content = json.loads(ws.content)
+            mn_card_in_content = any(
+                item.get("data", {}).get("card_name") == "MN Settings"
+                for item in content
+                if item.get("type") == "card"
+            )
+            if not mn_card_in_content:
+                # Add MN Settings card to content
+                content.append({
+                    "id": frappe.generate_hash(length=10),
+                    "type": "card",
+                    "data": {"card_name": "MN Settings", "col": 4},
+                })
+                ws.content = json.dumps(content)
+        
+        ws.save(ignore_permissions=True)
+        frappe.db.commit()
+        print("  ✓ Added eBalance Settings to Integrations workspace (MN Settings section)")
     except Exception as e:
         print(f"  ⚠ Could not add to Integrations workspace: {e}")
 
