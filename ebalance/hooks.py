@@ -57,7 +57,8 @@ fixtures = [
         "doctype": "Workspace",
         "filters": [["module", "=", "eBalance"]]
     },
-    # Approval workflow fixtures
+    # Approval workflow fixtures (order matters: states before workflow)
+    "ebalance/fixtures/ebalance_workflow_states.json",
     "ebalance/fixtures/ebalance_roles.json",
     "ebalance/fixtures/ebalance_workflow.json",
     "ebalance/fixtures/ebalance_notifications.json",

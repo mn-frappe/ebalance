@@ -1,6 +1,7 @@
 [
 	{
 		"doctype": "Workflow",
+		"name": "eBalance Report Approval",
 		"workflow_name": "eBalance Report Approval",
 		"document_type": "eBalance Report Request",
 		"is_active": 1,

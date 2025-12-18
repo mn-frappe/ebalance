@@ -1,6 +1,7 @@
 [
 	{
 		"doctype": "Role",
+		"name": "Financial Report Preparer",
 		"role_name": "Financial Report Preparer",
 		"desk_access": 1,
 		"is_custom": 1,
@@ -8,6 +9,7 @@
 	},
 	{
 		"doctype": "Role",
+		"name": "Financial Report Reviewer",
 		"role_name": "Financial Report Reviewer",
 		"desk_access": 1,
 		"is_custom": 1,
@@ -15,6 +17,7 @@
 	},
 	{
 		"doctype": "Role",
+		"name": "Financial Report Approver",
 		"role_name": "Financial Report Approver",
 		"desk_access": 1,
 		"is_custom": 1,
