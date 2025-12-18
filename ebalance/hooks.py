@@ -56,7 +56,11 @@ fixtures = [
     {
         "doctype": "Workspace",
         "filters": [["module", "=", "eBalance"]]
-    }
+    },
+    # Approval workflow fixtures
+    "ebalance/fixtures/ebalance_roles.json",
+    "ebalance/fixtures/ebalance_workflow.json",
+    "ebalance/fixtures/ebalance_notifications.json",
 ]
 
 # DocType Events - ERPNext Integration

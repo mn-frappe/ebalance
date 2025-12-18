@@ -1,0 +1,134 @@
+[
+	{
+		"doctype": "Workflow",
+		"workflow_name": "eBalance Report Approval",
+		"document_type": "eBalance Report Request",
+		"is_active": 1,
+		"override_status": 0,
+		"send_email_alert": 1,
+		"workflow_state_field": "workflow_state",
+		"states": [
+			{
+				"state": "Draft",
+				"doc_status": "0",
+				"is_optional_state": 0,
+				"allow_edit": "Financial Report Preparer"
+			},
+			{
+				"state": "Ready for Review",
+				"doc_status": "0",
+				"is_optional_state": 0,
+				"allow_edit": "Financial Report Preparer"
+			},
+			{
+				"state": "Pending Review",
+				"doc_status": "0",
+				"is_optional_state": 0,
+				"allow_edit": "Financial Report Reviewer"
+			},
+			{
+				"state": "Pending Approval",
+				"doc_status": "0",
+				"is_optional_state": 0,
+				"allow_edit": "Financial Report Reviewer"
+			},
+			{
+				"state": "Approved",
+				"doc_status": "0",
+				"is_optional_state": 0,
+				"allow_edit": "Financial Report Approver"
+			},
+			{
+				"state": "Rejected",
+				"doc_status": "0",
+				"is_optional_state": 0,
+				"allow_edit": "Financial Report Preparer"
+			},
+			{
+				"state": "Submitted to MOF",
+				"doc_status": "0",
+				"is_optional_state": 0,
+				"allow_edit": "Financial Report Approver"
+			},
+			{
+				"state": "Confirmed",
+				"doc_status": "0",
+				"is_optional_state": 0,
+				"allow_edit": "System Manager"
+			}
+		],
+		"transitions": [
+			{
+				"state": "Draft",
+				"action": "Generate Report",
+				"next_state": "Ready for Review",
+				"allowed": "Financial Report Preparer",
+				"allow_self_approval": 1,
+				"condition": "doc.status == 'Ready'"
+			},
+			{
+				"state": "Ready for Review",
+				"action": "Submit for Review",
+				"next_state": "Pending Review",
+				"allowed": "Financial Report Preparer",
+				"allow_self_approval": 1
+			},
+			{
+				"state": "Ready for Review",
+				"action": "Revise",
+				"next_state": "Draft",
+				"allowed": "Financial Report Preparer",
+				"allow_self_approval": 1
+			},
+			{
+				"state": "Pending Review",
+				"action": "Review & Approve",
+				"next_state": "Pending Approval",
+				"allowed": "Financial Report Reviewer",
+				"allow_self_approval": 0
+			},
+			{
+				"state": "Pending Review",
+				"action": "Reject",
+				"next_state": "Rejected",
+				"allowed": "Financial Report Reviewer",
+				"allow_self_approval": 0
+			},
+			{
+				"state": "Pending Approval",
+				"action": "Approve for Submission",
+				"next_state": "Approved",
+				"allowed": "Financial Report Approver",
+				"allow_self_approval": 0
+			},
+			{
+				"state": "Pending Approval",
+				"action": "Reject",
+				"next_state": "Rejected",
+				"allowed": "Financial Report Approver",
+				"allow_self_approval": 0
+			},
+			{
+				"state": "Approved",
+				"action": "Submit to MOF",
+				"next_state": "Submitted to MOF",
+				"allowed": "Financial Report Approver",
+				"allow_self_approval": 1
+			},
+			{
+				"state": "Rejected",
+				"action": "Revise",
+				"next_state": "Draft",
+				"allowed": "Financial Report Preparer",
+				"allow_self_approval": 1
+			},
+			{
+				"state": "Submitted to MOF",
+				"action": "Confirm",
+				"next_state": "Confirmed",
+				"allowed": "System Manager",
+				"allow_self_approval": 1
+			}
+		]
+	}
+]

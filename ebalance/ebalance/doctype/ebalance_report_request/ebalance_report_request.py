@@ -10,8 +10,9 @@ Workflow:
 1. Create Request - Select company, fiscal year, and report period
 2. Generate Data - Transform ERPNext GL Entries to MOF format
 3. Preview - Review Balance Sheet (СБТ) and Income Statement (ОҮТ)
-4. Save Draft - Send data to eBalance for validation
-5. Submit - Final submission to MOF for approval
+4. Internal Approval - Review → Approve by CFO/CEO
+5. Save Draft - Send data to eBalance for validation
+6. Submit - Final submission to MOF for approval
 """
 
 import frappe
@@ -33,6 +34,16 @@ class eBalanceReportRequest(Document):
 	- Confirmed: Approved by MOF
 	- Rejected: Rejected by MOF
 	- Failed: Error during process
+
+	Workflow States (internal approval):
+	- Draft: Initial state
+	- Ready for Review: Report generated, pending accountant review
+	- Pending Review: Submitted for reviewer check
+	- Pending Approval: Reviewed, awaiting CFO/CEO approval
+	- Approved: Ready for MOF submission
+	- Rejected: Returned for corrections
+	- Submitted to MOF: Sent to government
+	- Confirmed: Confirmed by MOF
 	"""
 
 	def validate(self):
@@ -40,6 +51,58 @@ class eBalanceReportRequest(Document):
 		self.validate_dates()
 		self.validate_company()
 		self.set_defaults()
+
+	def before_save(self):
+		"""Track workflow state changes for audit log"""
+		if self.has_value_changed("workflow_state"):
+			self._log_workflow_change()
+
+	def _log_workflow_change(self):
+		"""Log workflow state changes"""
+		old_state = self.get_doc_before_save()
+		old_workflow_state = old_state.workflow_state if old_state else None
+		new_workflow_state = self.workflow_state
+
+		if old_workflow_state == new_workflow_state:
+			return
+
+		# Determine action from state change
+		action = self._get_action_from_state_change(old_workflow_state, new_workflow_state)
+
+		# Update approval fields based on workflow action
+		if new_workflow_state == "Pending Approval":
+			self.reviewed_by = frappe.session.user
+			self.reviewed_date = now_datetime()
+		elif new_workflow_state == "Approved":
+			self.approved_by = frappe.session.user
+			self.approved_date = now_datetime()
+
+		# Create approval log
+		from ebalance.ebalance.doctype.ebalance_approval_log.ebalance_approval_log import (
+			create_approval_log,
+		)
+		create_approval_log(
+			report_request=self.name,
+			action=action,
+			from_status=old_workflow_state,
+			to_status=new_workflow_state,
+			comments=self.approval_comments
+		)
+
+	def _get_action_from_state_change(self, old_state, new_state):
+		"""Determine action name from state transition"""
+		transitions = {
+			("Draft", "Ready for Review"): "Created",
+			("Ready for Review", "Pending Review"): "Submitted for Review",
+			("Pending Review", "Pending Approval"): "Reviewed",
+			("Pending Approval", "Approved"): "Approved",
+			("Pending Review", "Rejected"): "Rejected",
+			("Pending Approval", "Rejected"): "Rejected",
+			("Rejected", "Draft"): "Created",
+			("Approved", "Submitted to MOF"): "Submitted to MOF",
+			("Submitted to MOF", "Confirmed"): "Confirmed by MOF",
+		}
+		return transitions.get((old_state, new_state), f"Changed to {new_state}")
 
 	def validate_dates(self):
 		"""Validate from_date and to_date"""
@@ -204,7 +267,18 @@ Balance Sheet Summary:
 
 		This is the final step - once submitted, the report
 		goes to MOF inspectors for review and CEO approval.
+
+		REQUIRES: Report must be approved via workflow before submission.
 		"""
+		# Check workflow approval
+		if self.workflow_state and self.workflow_state != "Approved":
+			frappe.throw(
+				_("Report must be approved before submission to MOF. Current state: {0}").format(
+					self.workflow_state
+				),
+				title=_("Approval Required")
+			)
+
 		if self.status not in ["Ready", "In Progress"]:
 			frappe.throw(_("Report must be in Ready or In Progress status to submit"))
 
@@ -213,6 +287,9 @@ Balance Sheet Summary:
 
 		try:
 			from ebalance.api.client import get_client
+			from ebalance.ebalance.doctype.ebalance_approval_log.ebalance_approval_log import (
+				create_approval_log,
+			)
 
 			client = get_client()
 
@@ -239,10 +316,20 @@ Balance Sheet Summary:
 				)
 
 			# Success
+			old_status = self.status
 			self.status = "Submitted"
 			self.submitted_date = now_datetime()
 			self.validation_errors = None
 			self.save()
+
+			# Log the submission
+			create_approval_log(
+				report_request=self.name,
+				action="Submitted to MOF",
+				from_status=old_status,
+				to_status="Submitted",
+				comments=f"Report submitted to MOF by {frappe.session.user}"
+			)
 
 			frappe.msgprint(
 				_("Report submitted to MOF successfully! Awaiting inspector review and CEO approval."),
