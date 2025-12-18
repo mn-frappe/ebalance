@@ -6,5 +6,5 @@ from frappe.model.document import Document
 
 
 class eBalanceSubmissionLog(Document):
-	"""eBalance Submission Log - Audit trail for submissions"""
-	pass
+    """eBalance Submission Log - Audit trail for submissions"""
+    pass
