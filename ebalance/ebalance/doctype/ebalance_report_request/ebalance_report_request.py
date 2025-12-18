@@ -92,7 +92,9 @@ class eBalanceReportRequest(Document):
     def _get_action_from_state_change(self, old_state, new_state):
         """Determine action name from state transition"""
         transitions = {
-            ("Draft", "Ready for Review"): "Created",
+            (None, "Draft"): "Created",
+            (None, "Ready for Review"): "Created",
+            ("Draft", "Ready for Review"): "Submitted for Review",
             ("Ready for Review", "Pending Review"): "Submitted for Review",
             ("Pending Review", "Pending Approval"): "Reviewed",
             ("Pending Approval", "Approved"): "Approved",
@@ -101,8 +103,10 @@ class eBalanceReportRequest(Document):
             ("Rejected", "Draft"): "Created",
             ("Approved", "Submitted to MOF"): "Submitted to MOF",
             ("Submitted to MOF", "Confirmed"): "Confirmed by MOF",
+            ("Submitted to MOF", "Rejected by MOF"): "Rejected by MOF",
         }
-        return transitions.get((old_state, new_state), f"Changed to {new_state}")
+        # Return mapped action or default to "Created" for unknown transitions
+        return transitions.get((old_state, new_state), "Created")
 
     def validate_dates(self):
         """Validate from_date and to_date"""
