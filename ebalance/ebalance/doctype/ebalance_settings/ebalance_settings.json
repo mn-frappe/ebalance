@@ -241,20 +241,21 @@
    "collapsible_depends_on": "eval:0",
    "fieldname": "autopilot_section",
    "fieldtype": "Section Break",
-   "label": "Autopilot"
+   "label": "Data Preparation",
+   "description": "Automate data preparation. Note: All reports require approval before submission."
   },
   {
    "default": "0",
-   "description": "Enable fully automated financial reporting. Reports will be generated and submitted automatically.",
+   "description": "Enable automated data preparation. Reports still require approval workflow (Preparer → Reviewer → Approver) before submission to MOF.",
    "fieldname": "autopilot_enabled",
    "fieldtype": "Check",
-   "label": "Enable Autopilot",
+   "label": "Enable Auto-Preparation",
    "bold": 1
   },
   {
    "default": "1",
    "depends_on": "autopilot_enabled",
-   "description": "Automatically generate financial reports from GL Entries.",
+   "description": "Automatically generate financial reports from GL Entries. Reports will be created as Draft for review.",
    "fieldname": "auto_generate_reports",
    "fieldtype": "Check",
    "label": "Auto-generate Reports"
