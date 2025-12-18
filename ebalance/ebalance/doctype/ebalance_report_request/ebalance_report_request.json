@@ -11,6 +11,7 @@
   "column_break_1",
   "report_type",
   "status",
+  "workflow_state",
   "company_section",
   "company",
   "fiscal_year",
@@ -27,6 +28,13 @@
   "balance_sheet_preview",
   "income_statement_preview",
   "report_summary",
+  "approval_section",
+  "reviewed_by",
+  "reviewed_date",
+  "column_break_approval",
+  "approved_by",
+  "approved_date",
+  "approval_comments",
   "submission_section",
   "submitted_date",
   "confirmed_date",
@@ -77,6 +85,16 @@
    "in_standard_filter": 1,
    "label": "Status",
    "options": "Draft\nGenerating\nReady\nIn Progress\nSubmitted\nConfirmed\nRejected\nFailed"
+  },
+  {
+   "allow_on_submit": 0,
+   "fieldname": "workflow_state",
+   "fieldtype": "Link",
+   "hidden": 1,
+   "label": "Workflow State",
+   "no_copy": 1,
+   "options": "Workflow State",
+   "read_only": 1
   },
   {
    "fieldname": "company_section",
@@ -172,6 +190,46 @@
    "read_only": 1
   },
   {
+   "fieldname": "approval_section",
+   "fieldtype": "Section Break",
+   "label": "Approval Information"
+  },
+  {
+   "fieldname": "reviewed_by",
+   "fieldtype": "Link",
+   "label": "Reviewed By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reviewed_date",
+   "fieldtype": "Datetime",
+   "label": "Reviewed Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_approval",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "approved_by",
+   "fieldtype": "Link",
+   "label": "Approved By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approved_date",
+   "fieldtype": "Datetime",
+   "label": "Approved Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "approval_comments",
+   "fieldtype": "Small Text",
+   "label": "Approval Comments"
+  },
+  {
    "fieldname": "submission_section",
    "fieldtype": "Section Break",
    "label": "Submission Info"
@@ -225,6 +283,40 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Financial Report Approver",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Financial Report Reviewer",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Financial Report Preparer",
    "share": 1,
    "write": 1
   },

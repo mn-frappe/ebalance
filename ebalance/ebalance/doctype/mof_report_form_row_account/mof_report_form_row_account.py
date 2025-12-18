@@ -9,5 +9,5 @@ from frappe.model.document import Document
 
 
 class MOFReportFormRowAccount(Document):
-	"""Child table row linking MOF accounts to form rows"""
-	pass
+    """Child table row linking MOF accounts to form rows"""
+    pass

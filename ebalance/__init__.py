@@ -33,7 +33,7 @@ Performance Optimizations (v1.1.1):
 
 Features (v1.3.0):
 - Comprehensive logging utilities (logger.py)
-- Autopilot mode for auto-fetch and auto-submit reports
+- Multi-level approval workflow for report submissions
 - Incremental GL aggregation caching
 - Multi-company entity support
 - Complete MOF fixtures (mof_accounts.py)

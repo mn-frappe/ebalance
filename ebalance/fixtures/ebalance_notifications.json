@@ -1,0 +1,74 @@
+[
+	{
+		"doctype": "Notification",
+		"name": "eBalance Report Pending Review",
+		"enabled": 1,
+		"channel": "Email",
+		"document_type": "eBalance Report Request",
+		"event": "Value Change",
+		"value_changed": "workflow_state",
+		"condition": "doc.workflow_state == 'Pending Review'",
+		"subject": "Financial Report Pending Review: {{ doc.name }}",
+		"message": "<p>Dear Reviewer,</p><p>A financial report has been submitted for your review.</p><p><strong>Report:</strong> {{ doc.name }}<br><strong>Company:</strong> {{ doc.company }}<br><strong>Period:</strong> {{ doc.from_date }} to {{ doc.to_date }}<br><strong>Submitted by:</strong> {{ frappe.get_doc('User', frappe.session.user).full_name }}</p><p>Please review and take appropriate action.</p><p><a href='{{ frappe.utils.get_url_to_form(doc.doctype, doc.name) }}'>View Report</a></p>",
+		"send_to_all_assignees": 0,
+		"recipients": [
+			{
+				"receiver_by_role": "Financial Report Reviewer"
+			}
+		]
+	},
+	{
+		"doctype": "Notification",
+		"name": "eBalance Report Pending Approval",
+		"enabled": 1,
+		"channel": "Email",
+		"document_type": "eBalance Report Request",
+		"event": "Value Change",
+		"value_changed": "workflow_state",
+		"condition": "doc.workflow_state == 'Pending Approval'",
+		"subject": "Financial Report Pending CFO/CEO Approval: {{ doc.name }}",
+		"message": "<p>Dear Approver,</p><p>A financial report has been reviewed and requires your final approval before submission to MOF.</p><p><strong>Report:</strong> {{ doc.name }}<br><strong>Company:</strong> {{ doc.company }}<br><strong>Period:</strong> {{ doc.from_date }} to {{ doc.to_date }}<br><strong>Reviewed by:</strong> {{ frappe.get_doc('User', frappe.session.user).full_name }}</p><p>Please review and approve for MOF submission.</p><p><a href='{{ frappe.utils.get_url_to_form(doc.doctype, doc.name) }}'>View Report</a></p>",
+		"send_to_all_assignees": 0,
+		"recipients": [
+			{
+				"receiver_by_role": "Financial Report Approver"
+			}
+		]
+	},
+	{
+		"doctype": "Notification",
+		"name": "eBalance Report Approved",
+		"enabled": 1,
+		"channel": "Email",
+		"document_type": "eBalance Report Request",
+		"event": "Value Change",
+		"value_changed": "workflow_state",
+		"condition": "doc.workflow_state == 'Approved'",
+		"subject": "Financial Report Approved: {{ doc.name }}",
+		"message": "<p>The following financial report has been approved and is ready for MOF submission.</p><p><strong>Report:</strong> {{ doc.name }}<br><strong>Company:</strong> {{ doc.company }}<br><strong>Period:</strong> {{ doc.from_date }} to {{ doc.to_date }}<br><strong>Approved by:</strong> {{ frappe.get_doc('User', frappe.session.user).full_name }}</p><p><a href='{{ frappe.utils.get_url_to_form(doc.doctype, doc.name) }}'>View Report</a></p>",
+		"send_to_all_assignees": 0,
+		"recipients": [
+			{
+				"receiver_by_role": "Financial Report Preparer"
+			}
+		]
+	},
+	{
+		"doctype": "Notification",
+		"name": "eBalance Report Rejected",
+		"enabled": 1,
+		"channel": "Email",
+		"document_type": "eBalance Report Request",
+		"event": "Value Change",
+		"value_changed": "workflow_state",
+		"condition": "doc.workflow_state == 'Rejected'",
+		"subject": "Financial Report Rejected: {{ doc.name }}",
+		"message": "<p>The following financial report has been rejected and requires revision.</p><p><strong>Report:</strong> {{ doc.name }}<br><strong>Company:</strong> {{ doc.company }}<br><strong>Period:</strong> {{ doc.from_date }} to {{ doc.to_date }}<br><strong>Rejected by:</strong> {{ frappe.get_doc('User', frappe.session.user).full_name }}</p><p>Please review the comments and make necessary corrections.</p><p><a href='{{ frappe.utils.get_url_to_form(doc.doctype, doc.name) }}'>View Report</a></p>",
+		"send_to_all_assignees": 0,
+		"recipients": [
+			{
+				"receiver_by_role": "Financial Report Preparer"
+			}
+		]
+	}
+]

@@ -9,5 +9,5 @@ from frappe.model.document import Document
 
 
 class MOFAccountMappingItem(Document):
-	"""Child table row for MOF Account Mapping"""
-	pass
+    """Child table row for MOF Account Mapping"""
+    pass
