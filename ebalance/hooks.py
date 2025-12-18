@@ -92,7 +92,6 @@ scheduler_events = {
     ],
     "daily": [
         "ebalance.tasks.daily.execute",
-        "ebalance.performance.auto_submit_reports",
     ],
     "weekly": [
         "ebalance.tasks.weekly.execute",

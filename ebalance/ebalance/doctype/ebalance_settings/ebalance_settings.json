@@ -32,8 +32,6 @@
   "autopilot_enabled",
   "auto_generate_reports",
   "column_break_autopilot",
-  "auto_submit_due_reports",
-  "autopilot_interval_hours",
   "sync_section",
   "auto_sync_periods",
   "sync_frequency",
@@ -264,22 +262,6 @@
   {
    "fieldname": "column_break_autopilot",
    "fieldtype": "Column Break"
-  },
-  {
-   "default": "0",
-   "depends_on": "autopilot_enabled",
-   "description": "Automatically submit reports when deadline approaches.",
-   "fieldname": "auto_submit_due_reports",
-   "fieldtype": "Check",
-   "label": "Auto-submit Due Reports"
-  },
-  {
-   "default": "24",
-   "depends_on": "autopilot_enabled",
-   "description": "Hours before deadline to auto-submit reports.",
-   "fieldname": "autopilot_interval_hours",
-   "fieldtype": "Int",
-   "label": "Auto-submit Hours Before Deadline"
   },
   {
    "collapsible": 1,

@@ -370,47 +370,9 @@ def auto_sync_report_periods():
         frappe.log_error(f"Auto-sync report periods failed: {e}")
 
 
-@log_scheduler_task("Auto Submit Reports")
-def auto_submit_reports():
-    """
-    Automatically submit due reports.
-    Called by scheduler based on autopilot settings.
-    """
-    settings = frappe.get_single("eBalance Settings")
-    if not getattr(settings, "auto_fetch_forms", False):
-        log_debug("Auto submit disabled - skipping")
-        return {"status": "skipped", "reason": "auto_submit_disabled"}
-
-    # Find reports due for submission
-    from frappe.utils import today
-    due_reports = frappe.get_all(
-        "eBalance Report Period",
-        filters={
-            "status": "Draft",
-            "end_date": ["<=", today()]
-        },
-        fields=["name", "company", "period_name"],
-        limit=10
-    )
-
-    submitted_count = 0
-    error_count = 0
-
-    for report in due_reports:
-        try:
-            frappe.enqueue(
-                "ebalance.api.client.submit_report",
-                report_name=report.name,
-                queue="long",
-                timeout=600
-            )
-            log_info("Queued report submission", {"report": report.name, "company": report.company, "period": report.period_name})
-            submitted_count += 1
-        except Exception as e:
-            log_error(f"Failed to queue report submission {report.name}", exc=e)
-            error_count += 1
-
-    return {"submitted": submitted_count, "errors": error_count, "total_found": len(due_reports)}
+# NOTE: Auto-submit functionality has been removed.
+# Financial reports now require manual approval workflow before submission.
+# See: eBalance Report Approval workflow (Financial Report Preparer → Reviewer → Approver)
 
 
 # =============================================================================
