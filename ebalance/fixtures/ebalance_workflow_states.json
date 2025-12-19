@@ -1,5 +1,6 @@
 [
   {
+    "__comment": "SHARED WORKFLOW STATES - Used by both eBalance and eTax approval workflows. eTax only defines app-specific 'Submitted to MTA' state.",
     "doctype": "Workflow State",
     "name": "Draft",
     "workflow_state_name": "Draft",
