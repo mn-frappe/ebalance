@@ -10,10 +10,9 @@ Tests the validation utilities for API payload validation.
 
 import unittest
 from datetime import date, datetime
-from decimal import Decimal
 
 import frappe
-from frappe.tests import IntegrationTestCase
+from frappe.tests.utils import FrappeTestCase
 
 from ebalance.utils.validators import (
     ValidationError,
@@ -91,7 +90,7 @@ class TestValidator(unittest.TestCase):
         result = (Validator()
             .field("email", None)
             .optional()
-            .regex(r"^\S+@\S+$")  # This should be skipped
+            .regex(r"^\S+@\S+$")
             .validate())
         self.assertTrue(result.is_valid)
 
@@ -289,7 +288,6 @@ class TestReportRequestValidation(unittest.TestCase):
         }
         result = validate_report_request(data)
         self.assertFalse(result.is_valid)
-        # Should have errors for year, period, report_type
         self.assertGreaterEqual(len(result.errors), 3)
 
     def test_invalid_report_request_invalid_entity(self):
