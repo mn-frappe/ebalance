@@ -24,6 +24,14 @@ from ebalance.integrations.trial_balance import (
     get_trial_balance_for_ebalance,
     preview_ebalance_data,
 )
+# eBarimt Integration (Optional - works without eBarimt installed)
+from ebalance.integrations.ebarimt import (
+    is_ebarimt_available,
+    get_ebarimt_vat_summary,
+    get_ebarimt_receipts_for_reconciliation,
+    reconcile_vat,
+    get_reconciliation_data,
+)
 
 __all__ = [
     # Company
@@ -49,5 +57,12 @@ __all__ = [
     "gl_entry_on_cancel",
     "get_gl_summary_for_period",
     "validate_gl_completeness",
-    "get_period_gl_status"
+    "get_period_gl_status",
+    
+    # eBarimt (Optional)
+    "is_ebarimt_available",
+    "get_ebarimt_vat_summary",
+    "get_ebarimt_receipts_for_reconciliation",
+    "reconcile_vat",
+    "get_reconciliation_data",
 ]
