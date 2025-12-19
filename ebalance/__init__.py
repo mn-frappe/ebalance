@@ -39,4 +39,4 @@ Features (v1.3.0):
 - Complete MOF fixtures (mof_accounts.py)
 """
 
-__version__ = "1.3.0"
+__version__ = "1.4.0"
