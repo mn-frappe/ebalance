@@ -63,14 +63,20 @@ class CircuitBreaker:
     
     def _load_state(self):
         """Load circuit state from cache"""
-        cache_key = f"circuit_breaker:{self.name}"
-        cached = frappe.cache().get_value(cache_key)
-        if cached:
-            self._state = CircuitState(cached.get("state", "closed"))
-            self._failure_count = cached.get("failure_count", 0)
-            last_failure = cached.get("last_failure_time")
-            if last_failure:
-                self._last_failure_time = datetime.fromisoformat(last_failure)
+        try:
+            cache_key = f"circuit_breaker:{self.name}"
+            cached = frappe.cache().get_value(cache_key)
+            if cached and isinstance(cached, dict):
+                state_value = cached.get("state", "closed")
+                if isinstance(state_value, str):
+                    self._state = CircuitState(state_value)
+                self._failure_count = cached.get("failure_count", 0)
+                last_failure = cached.get("last_failure_time")
+                if last_failure and isinstance(last_failure, str):
+                    self._last_failure_time = datetime.fromisoformat(last_failure)
+        except Exception:
+            # If loading fails, start with default closed state
+            pass
     
     def _save_state(self):
         """Save circuit state to cache"""
