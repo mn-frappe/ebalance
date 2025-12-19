@@ -1,3 +1,9 @@
+## [1.4.1](https://github.com/mn-frappe/ebalance/compare/v1.4.0...v1.4.1) (2025-12-18)
+
+### 🐛 Bug Fixes
+
+* update linter workflow to match passing pattern ([251124c](https://github.com/mn-frappe/ebalance/commit/251124c6e73ce5a5e57dc7d2ea439097f34eba62))
+
 ## [1.4.0](https://github.com/mn-frappe/ebalance/compare/v1.3.0...v1.4.0) (2025-12-17)
 
 ### 🚀 Features
