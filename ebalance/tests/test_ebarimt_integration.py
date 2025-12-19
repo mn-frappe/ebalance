@@ -142,23 +142,6 @@ class TestVATReconciliation(unittest.TestCase):
         mock_frappe.db.get_single_value.return_value = 1
         mock_frappe.format_value = lambda x, **kwargs: str(x)
         
-        # Create mock receipt result that supports .get() method
-        mock_receipt_result = MagicMock()
-        mock_receipt_result.get = lambda k, default=None: {
-            "total_vat": 100000, 
-            "total_amount": 1100000, 
-            "b2b_vat": 60000, 
-            "b2c_vat": 40000, 
-            "receipt_count": 50, 
-            "return_vat": 0
-        }.get(k, default)
-        
-        # Mock eBarimt data - db.sql returns list of results
-        mock_frappe.db.sql.side_effect = [
-            [mock_receipt_result],  # eBarimt summary
-            [],  # daily
-        ]
-        
         with patch("ebalance.integrations.gl_entry.get_gl_summary_for_period") as mock_gl:
             mock_gl.return_value = {}
             
@@ -169,10 +152,21 @@ class TestVATReconciliation(unittest.TestCase):
                     "net_vat": 50000
                 }
                 
-                with patch("ebalance.integrations.ebarimt._find_specific_discrepancies") as mock_disc:
-                    mock_disc.return_value = []
+                with patch("ebalance.integrations.ebarimt.get_ebarimt_vat_summary") as mock_eb:
+                    mock_eb.return_value = {
+                        "available": True,
+                        "totals": {
+                            "vat_amount": 100000,
+                            "total_amount": 1100000,
+                            "receipt_count": 50
+                        },
+                        "breakdown": {}
+                    }
                     
-                    result = reconcile_vat("_Test Company", "2024-01-01", "2024-01-31")
+                    with patch("ebalance.integrations.ebarimt._find_specific_discrepancies") as mock_disc:
+                        mock_disc.return_value = []
+                        
+                        result = reconcile_vat("_Test Company", "2024-01-01", "2024-01-31")
         
         self.assertTrue(result["reconciled"])
         self.assertEqual(result["comparison"]["difference"], 0)
