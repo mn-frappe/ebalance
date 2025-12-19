@@ -195,8 +195,23 @@ class TestIdempotencyKeyGeneration(unittest.TestCase):
 class TestIdempotencyWithRealOperations(FrappeTestCase):
     """Integration tests simulating real eBalance operations"""
 
-    def test_duplicate_report_submission_prevented(self):
+    @patch("frappe.cache")
+    def test_duplicate_report_submission_prevented(self, mock_cache):
         """Test duplicate report submissions are prevented"""
+        # Set up mock cache to simulate real behavior
+        cache_storage = {}
+        
+        def mock_get_value(key):
+            return cache_storage.get(key)
+        
+        def mock_set_value(key, value, expires_in_sec=None):
+            cache_storage[key] = value
+        
+        mock_cache_instance = MagicMock()
+        mock_cache_instance.get_value = mock_get_value
+        mock_cache_instance.set_value = mock_set_value
+        mock_cache.return_value = mock_cache_instance
+        
         manager = IdempotencyManager("ebalance")
         
         submission_params = {
@@ -208,7 +223,7 @@ class TestIdempotencyWithRealOperations(FrappeTestCase):
         
         key = manager.generate_key("submit_report", **submission_params)
         
-        # First submission
+        # First submission - not duplicate
         result1 = manager.check(key)
         self.assertFalse(result1.is_duplicate)
         
@@ -218,3 +233,4 @@ class TestIdempotencyWithRealOperations(FrappeTestCase):
         # Second submission should be duplicate
         result2 = manager.check(key)
         self.assertTrue(result2.is_duplicate)
+        self.assertEqual(result2.cached_result, {"submission_id": "SUB001", "status": "success"})
