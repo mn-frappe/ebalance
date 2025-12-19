@@ -1,3 +1,9 @@
+## [1.5.0](https://github.com/mn-frappe/ebalance/compare/v1.4.1...v1.5.0) (2025-12-19)
+
+### 🚀 Features
+
+* Add optional eBarimt VAT reconciliation integration ([#5](https://github.com/mn-frappe/ebalance/issues/5)) ([9b5bd3a](https://github.com/mn-frappe/ebalance/commit/9b5bd3ac075208dcce0929ec0db930dbbd1dc2b9))
+
 ## [1.4.1](https://github.com/mn-frappe/ebalance/compare/v1.4.0...v1.4.1) (2025-12-18)
 
 ### 🐛 Bug Fixes
